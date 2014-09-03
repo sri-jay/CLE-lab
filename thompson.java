@@ -1,9 +1,6 @@
 package com.company;
-
 import java.io.*;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 public class Main
 {
@@ -45,6 +42,9 @@ class NFA
     }
     void AddNewState(char sym)
     {
+        if(StateCount == 0)
+            AddStartState();
+
         NFAState newstate = StartState;
         while(true)
         {
@@ -55,6 +55,12 @@ class NFA
         }
         newstate.SetTransition(new NFAState(++StateCount),sym);
 
+    }
+
+    void AddStartState()
+    {
+        NFAState newstate = StartState;
+        newstate.SetTransition(new NFAState(++StateCount),'E');
     }
 
     void SetFinalState()
