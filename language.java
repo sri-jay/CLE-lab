@@ -75,3 +75,27 @@ class main
 			System.out.println(x);
 	}
 }
+
+/**
+ * Creating 2 languages
+ * Enter your language as a string
+ * B A T
+ * Language a
+ * B
+ * A
+ * T
+ * Enter your language as a string
+ * M A N
+ * Language b
+ * M
+ * A
+ * N
+ * Set Intersection :
+ * A
+ * Set Union :
+ * B
+ * A
+ * T
+ * M
+ * N
+*/

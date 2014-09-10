@@ -65,3 +65,17 @@ class main
 		return concatedLang;
 	}
 }
+
+/**
+ * Enter your language as a string
+ *	A B
+ *
+ *	Enter your language as a string
+ *	C D
+ *
+ *	Language A+Language B
+ *	CA
+ *	DA
+ *	CB
+ *	DB	
+*/

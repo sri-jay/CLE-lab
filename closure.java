@@ -92,3 +92,26 @@ class main
 		return union;
 	}
 }
+
+/**
+* Enter your language as a string
+* S A M
+* Calculating Closures
+* Enter a limit.
+* 2
+* * or +?
+* +
+* Closure of Language A
+* S
+* A
+* M
+* SS
+* AS
+* MS
+* SA
+* AA
+* MA
+* SM
+* AM
+* MM
+ */

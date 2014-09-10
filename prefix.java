@@ -10,6 +10,8 @@ class main
 	{
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		
+		System.out.println("Enter a string.");
+
 		String str = reader.readLine();
 		Set<String> data = new LinkedHashSet<String>();
 	
@@ -53,3 +55,85 @@ class main
 
 	}
 }
+
+
+/** 
+ *  Enter a string.
+ *  MPTYBRNS
+ *  Prefixes
+ *  
+ *  M
+ *  MP
+ *  MPT
+ *  MPTY
+ *  MPTYB
+ *  MPTYBR
+ *  MPTYBRN
+ *  MPTYBRNS
+ *  
+ *  Suffixes
+ *  
+ *  S
+ *  NS
+ *  RNS
+ *  BRNS
+ *  YBRNS
+ *  TYBRNS
+ *  PTYBRNS
+ *  MPTYBRNS
+ *  
+ *  Proper Suffixes
+ *  S
+ *  NS
+ *  RNS
+ *  BRNS
+ *  YBRNS
+ *  TYBRNS
+ *  PTYBRNS
+ *  
+ *  Substrings
+ *  
+ *  M
+ *  MP
+ *  MPT
+ *  MPTY
+ *  MPTYB
+ *  MPTYBR
+ *  MPTYBRN
+ *  MPTYBRNS
+ *  
+ *  P
+ *  PT
+ *  PTY
+ *  PTYB
+ *  PTYBR
+ *  PTYBRN
+ *  PTYBRNS
+ *  
+ *  T
+ *  TY
+ *  TYB
+ *  TYBR
+ *  TYBRN
+ *  TYBRNS
+ *  
+ *  Y
+ *  YB
+ *  YBR
+ *  YBRN
+ *  YBRNS
+ *  
+ *  B
+ *  BR
+ *  BRN
+ *  BRNS
+ *  
+ *  R
+ *  RN
+ *  RNS
+ *  
+ *  N
+ *  NS
+ *  
+ *  S
+ */
