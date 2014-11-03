@@ -13,4 +13,5 @@ TODO
 ----
 
 * ~~Regular expression parser.~~
-* Infix to postfix converter.
+* ~~Infix to postfix converter.~~
+* Parser table.
