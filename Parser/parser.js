@@ -18,18 +18,18 @@ function Production(lhs,rhs) {
 function Grammar() {
 
 	this.terminals = [];
-	this.nonTerminsls = [];
+	this.nonTerminals = [];
 
 	this.productions = {};
 	this.first = {};
 	this.follow = {}	;
 
-	this.specfyTerminals = function (ter) {
+	this.specifyTerminals = function (ter) {
 		this.terminals = ter;
 	};
 
 	this.specifyNTerminals = function (nter) {
-		this.nonTerminsls = nter
+		this.nonTerminals = nter
 	};
 
 	this.printAllProductions = function () {
@@ -92,7 +92,7 @@ function Grammar() {
 
 			delete this.productions[lrProduction.recSym];
 
-			var nrProduction = (function (lrPd) {
+			var nrProduction = (function (lrPd,nonTerminals) {
 
 				var 
 					clrPrdSet = new Object(),
@@ -100,7 +100,7 @@ function Grammar() {
 					replaceRhs = [],
 					newProdRhs = [];
 
-				this.nonTerminsls.push(nNt);
+				console.log(nonTerminals);
 
 				for (var i =0;i<lrPd.recProd.length;i++) {
 					var pd = lrPd.recProd[i];
@@ -129,37 +129,52 @@ function Grammar() {
 
 				return clrPrdSet;
 
-			})(lrProduction);
+			})(lrProduction,this.nonTerminals);
 
 			this.productions[nrProduction.replace.lhs] = nrProduction.replace.rhs;
 			this.productions[nrProduction.newProd.lhs] = nrProduction.newProd.rhs;
 		}
 
 		console.log("Finished removing left recursion");
-		console.log(this.productions);
+		console.log(this.productions,this.nonTerminals);
 	};
 
-	var removeLeftFactoring = function () {
-		
-	};
-
-	var buildFirstSet = function () {
-		var first = (function (productions) {
-
-			var first = {};
-
-			for (var m in productions) {
-				first[m] = [];
-				for (var i=0;i<productions[m].length;i++) {
-					if(this.terminals.indexOf(productions[m][0]) >= 0)
-						first[m].push(productions[m][0]);
+	this.buildFirstAndFollow = function () {
+		 this.nullables = (function (productions) {
+		 	var nullables = [];
+			for(var m in productions) {
+				for(var i=0;i<productions[m].length;i++) {
+					if(productions[m][i] == "<lambda>") {
+						nullables.push(m);
+						break;
+					}
 				}
 			}
-
+			console.log("Nullables : "+nullables);
 		})(this.productions);
-	};
 
-	var buildFollowSet = function () {};
+		var first = (function (productions,terminals,nTerminals) {
+			var first = [];
+			for(var m in productions) {
+				for(var i=0;i<productions[m].length;i++){
+					var rhs = productions[m][i];
+					if(terminals.indexOf(rhs[0]) >= 0)
+						first.push(rhs[0]);
+					else if(nTerminals.indexOf(rhs[0]) >= 0) {
+						var nter = rhs[0];
+						for(var i=0;i<productions[nter].length;i++){
+							var nt = productions[nter][i][0]
+							if(terminals.indexOf(nt) >= 0)
+								first.push(nt);
+						}
+					}
+				}
+			}
+			return first;
+		})(this.productions,this.terminals,this.nonTerminals);
+
+		console.log(first);
+	};
 }
 
 var G = new Grammar();
@@ -169,8 +184,8 @@ var G = new Grammar();
 // G.addProduction(new Production("A",['b']));
 // G.addProduction(new Production("C",['C','x']));
 
-G.specfyTerminals(['A','S']);
-G.specifyNTerminals(['c','b','d','a']);
+G.specifyNTerminals(['A','S']);
+G.specifyTerminals(['c','b','d','a']);
 
 G.addProduction(new Production("S",['A','a']));
 G.addProduction(new Production("S",['b']));
@@ -181,3 +196,4 @@ G.addProduction(new Production("A",['A','a','d']));
 
 G.printAllProductions();
 G.removeLeftRecursion();
+G.buildFirstAndFollow();
