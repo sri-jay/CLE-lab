@@ -153,47 +153,30 @@ function Grammar() {
 			console.log("Nullables : "+nullables);
 		})(this.productions);
 
-		var first = (function (productions,terminals,nTerminals) {
-			var first = [];
-			for(var m in productions) {
-				for(var i=0;i<productions[m].length;i++){
-					var rhs = productions[m][i];
-					if(terminals.indexOf(rhs[0]) >= 0)
-						first.push(rhs[0]);
-					else if(nTerminals.indexOf(rhs[0]) >= 0) {
-						var nter = rhs[0];
-						for(var i=0;i<productions[nter].length;i++){
-							var nt = productions[nter][i][0]
-							if(terminals.indexOf(nt) >= 0)
-								first.push(nt);
-						}
-					}
-				}
-			}
-			return first;
+		var first = (function (prod,ter,nter){
+			console.log("Building FIRST set.");
+			console.log(prod);
+			console.log(ter);
+			console.log(nter);
 		})(this.productions,this.terminals,this.nonTerminals);
 
-		console.log(first);
 	};
 }
 
-var G = new Grammar();
+function run() {
+	var G = new Grammar();
 
-// G.addProduction(new Production("A",['x','B']));
-// G.addProduction(new Production("A",['A','x']));
-// G.addProduction(new Production("A",['b']));
-// G.addProduction(new Production("C",['C','x']));
+	G.specifyNTerminals(['A','S']);
+	G.specifyTerminals(['c','b','d','a']);
 
-G.specifyNTerminals(['A','S']);
-G.specifyTerminals(['c','b','d','a']);
+	G.addProduction(new Production("S",['A','a']));
+	G.addProduction(new Production("S",['b']));
+	G.addProduction(new Production("A",['A','c']));
+	G.addProduction(new Production("A",['<lambda>']));
+	G.addProduction(new Production("A",['b','d']));
+	G.addProduction(new Production("A",['A','a','d']));
 
-G.addProduction(new Production("S",['A','a']));
-G.addProduction(new Production("S",['b']));
-G.addProduction(new Production("A",['A','c']));
-G.addProduction(new Production("A",['<lambda>']));
-G.addProduction(new Production("A",['b','d']));
-G.addProduction(new Production("A",['A','a','d']));
-
-G.printAllProductions();
-G.removeLeftRecursion();
-G.buildFirstAndFollow();
+	G.printAllProductions();
+	G.removeLeftRecursion();
+	G.buildFirstAndFollow();
+}
