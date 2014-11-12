@@ -1,4 +1,4 @@
-package com.company;
+package com.nfautomaton;
 
 import java.util.*;
 
@@ -16,32 +16,32 @@ class NFAState
         transitions = 2;
     }
 
-    int GetState() {
+    int getState() {
         return state;
     }
 
-    void SetTransition(NFAState nfState,char trans,int n) {
-        transition.get(n).SetTransitionTarget(nfState,trans);
+    void setTransition(NFAState nfState,char trans,int n) {
+        transition.get(n).setTransitionTarget(nfState, trans);
     }
 
-    NFAState GetTransition()
+    NFAState getTransition()
     {
-        return transition.get(0).GetTransition();
+        return transition.get(0).getTransition();
     }
 
-    StateTransition GetStateTransition()
+    StateTransition getStateTransition()
     {
         return transition.get(0);
     }
-    void PrintNFAData()
+    void grintNFAData()
     {
-        Character symbol = transition.get(0).GetSymbol();
+        Character symbol = transition.get(0).getSymbol();
         if(symbol == '~')
             System.out.println("->("+state+")");
         else
             System.out.print("->("+state+")"+"-"+symbol);
     }
-    List<StateTransition> GetStateTransitionsAsList()
+    List<StateTransition> getStateTransitionsAsList()
     {
         return new ArrayList<StateTransition>(transition);
     }

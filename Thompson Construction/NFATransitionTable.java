@@ -1,4 +1,4 @@
-package com.company;
+package com.nfautomaton;
 import java.util.*;
 
 /* *
@@ -7,7 +7,8 @@ import java.util.*;
  * Each transition is of the form :
  *  CurrentState-Symbol-TargetState
  *  */
-public class NFATransitionTable {
+public class NFATransitionTable
+{
 
     private Set<String> coretable;
     private boolean tablevalidity;
@@ -18,44 +19,45 @@ public class NFATransitionTable {
         tablevalidity = false;
         coretable = new TreeSet<String>();
         traveller = st;
-        System.out.println("Created TransitionTable");
-        UpdateTable();
+        updateTable();
     }
 
     /**
      * Builds the transition table recursively.
      * */
-    void TransitionTableRecursiveBuild(NFAState traveller,Set<String> table) {
-        List<StateTransition> transitions = traveller.GetStateTransitionsAsList();
+    void transitionTableRecursiveBuild(NFAState traveller,Set<String> table)
+    {
+        List<StateTransition> transitions = traveller.getStateTransitionsAsList();
         for(StateTransition st : transitions)
         {
-            if(st.GetSymbol() != '~' && !table.contains(traveller.GetState() + "  " + Character.toString(st.GetSymbol()) + "  " + Integer.toString(st.GetTransitionTarget()))){
-                table.add(traveller.GetState() + "  " + Character.toString(st.GetSymbol()) + "  " + Integer.toString(st.GetTransitionTarget()));
+            if(st.getSymbol() != '~' && !table.contains(traveller.getState() + "  " + Character.toString(st.getSymbol()) + "  " + Integer.toString(st.getTransitionTarget()))){
+                table.add(traveller.getState() + "  " + Character.toString(st.getSymbol()) + "  " + Integer.toString(st.getTransitionTarget()));
             }
             else
                 return;
 
-            if(st.GetTransition() != null){
-                TransitionTableRecursiveBuild(st.GetTransition(),table);
+            if(st.getTransition() != null){
+                transitionTableRecursiveBuild(st.getTransition(),table);
             }
         }
         return;
     }
 
-    void UpdateTable() {
-        TransitionTableRecursiveBuild(traveller,coretable);
+    void updateTable()
+    {
+        transitionTableRecursiveBuild(traveller,coretable);
         tablevalidity = true;
     }
 
-    void InvalidateTable()
+    void invalidateTable()
     {
         tablevalidity = false;
     }
 
-    Set<String> GetTransitionTable()
+    Set<String> getTransitionTable()
     {
         if(!tablevalidity)
-            UpdateTable();
+            updateTable();
 
         return coretable;
     }

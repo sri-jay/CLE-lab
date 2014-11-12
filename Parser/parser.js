@@ -32,6 +32,20 @@ function Grammar() {
 		this.nonTerminals = nter
 	};
 
+	this.isTerminal = function (ter) {
+		if(this.terminals.indexOf(ter) >= 0)
+			return true;
+		else
+			return false;
+	};
+
+	this.isNonTerminal = function (nTer) {
+		if(this.nonTerminals.indexOf(nTer) >= 0)
+			return true;
+		else
+			return false;
+	};
+
 	this.printAllProductions = function () {
 			for(var m in this.productions)
 			{
@@ -143,23 +157,60 @@ function Grammar() {
 		 this.nullables = (function (productions) {
 		 	var nullables = [];
 			for(var m in productions) {
-				for(var i=0;i<productions[m].length;i++) {
-					if(productions[m][i] == "<lambda>") {
-						nullables.push(m);
-						break;
-					}
-				}
+				if(productions[m].indexOf("<lambda>") >= 0)
+					nullables.push(m);
 			}
 			console.log("Nullables : "+nullables);
 		})(this.productions);
 
+		/*
+			First of language
+		 */
 		var first = (function (prod,ter,nter){
+			console.clear();
+
 			console.log("Building FIRST set.");
-			console.log(prod);
-			console.log(ter);
-			console.log(nter);
+			console.log("Productions : "+prod);
+			console.log("Terminals : "+ter);
+			console.log("Non Terminals : "+nter);
+
+			console.log("Initializing FIRST set.")
+			var first = (function (prd) {
+				var fst = {};
+				for(var m in prd)
+					fst[m] = [];
+				return fst;
+			})(prod);
+
+			for(var m in prod) {
+				for(var i=0;i<prod[m].length;i++) {
+					var pd = prod[m][i];
+					if(ter.indexOf(pd[0]) >= 0)
+						first[m].push(pd[0]);
+				}
+			}
+			for(var m in first) {
+				console.log("First of "+m+" -> ");
+				console.log(first[m]);
+			}
 		})(this.productions,this.terminals,this.nonTerminals);
 
+		var follow = (function (prod,ter,nter) {
+			console.clear();
+
+			console.log("Building FOLLOW set.");
+			console.log("Productions : "+prod);
+			console.log("Terminals : "+ter);
+			console.log("Non Terminals : "+nter);
+
+			console.log("Initializing FOLLOW set.")
+			var follow = (function () {
+				var flw = {};
+				for(var m in prod)
+					flw[m] = [];
+				return flw;
+			})(prod);
+		})(this.productions,this.terminals,this.nonTerminals);
 	};
 }
 
@@ -180,3 +231,5 @@ function run() {
 	G.removeLeftRecursion();
 	G.buildFirstAndFollow();
 }
+
+run();

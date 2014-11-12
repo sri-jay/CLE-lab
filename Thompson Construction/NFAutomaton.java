@@ -1,4 +1,4 @@
-package com.company;
+package com.nfautomaton;
 
 import java.util.*;
 
@@ -8,13 +8,14 @@ import java.util.*;
  * */
 class NFAutomaton
 {
+    private final Character LAMBDA = 'λ';
     /*Holds the number of States in the NFA
     * */
     private int StateCount;
 
     /*Start state holds reference to  StartState of NFA
     * StartState has state = -666*/
-    private NFAState StartState;
+    private NFAState StartState ;
 
     /*FinalState holds the FinalState of the NFA.
     * FinalState has state = 666*/
@@ -29,71 +30,100 @@ class NFAutomaton
      */
     private RegularExpression regExp;
 
-    NFAutomaton() {
+    NFAutomaton()
+    {
         StateCount = 0;
         StartState = new NFAState(-666);
         FinalState = new NFAState(666);
         TransitionTable = new NFATransitionTable(StartState);
     }
 
-    NFATransitionPair ThompsonOR(NFATransitionPair transA,NFATransitionPair transB)
+    void loadRegularExpression(String re)
+    {
+        regExp = new RegularExpression(re);
+        regExp.infixToPostfix();
+    }
+
+    void destroyAutomaton()
+    {
+        this.StartState = null;
+        this.FinalState = null;
+        System.gc();
+    }
+
+    NFATransitionPair thompsonUnion(NFATransitionPair transA,NFATransitionPair transB)
     {
         NFAState branchOut = new NFAState(StateCount++);
         NFAState branchIn = new NFAState(StateCount++);
 
-        branchOut.SetTransition(transA.getRef("head"),'λ',0);
-        branchOut.SetTransition(transB.getRef("head"),'λ',1);
+        branchOut.setTransition(transA.getRef(NFATransitionPair.HEAD), LAMBDA, 0);
+        branchOut.setTransition(transB.getRef(NFATransitionPair.HEAD), LAMBDA, 1);
 
-        transA.getRef("tail").SetTransition(branchIn,'λ',0);
-        transB.getRef("tail").SetTransition(branchIn,'λ',0);
+        transA.getRef(NFATransitionPair.TAIL).setTransition(branchIn, LAMBDA, 0);
+        transB.getRef(NFATransitionPair.TAIL).setTransition(branchIn, LAMBDA, 0);
 
-        TransitionTable.InvalidateTable();
         return new NFATransitionPair(branchOut,branchIn,false);
     }
 
-    NFATransitionPair ThompsonAND(NFATransitionPair transA,NFATransitionPair transB)
+    NFATransitionPair thompsonConcatenation(NFATransitionPair transA,NFATransitionPair transB)
     {
         NFATransitionPair andPair = null;
         if(transB.isPrimitive)
         {
-            NFAState transATail = transA.getRef("tail");
-            NFAState transBTail = transB.getRef("tail");
-            NFAState transBHead = transB.getRef("head");
+            NFAState transATail = transA.getRef(NFATransitionPair.TAIL);
+            NFAState transBTail = transB.getRef(NFATransitionPair.TAIL);
+            NFAState transBHead = transB.getRef(NFATransitionPair.HEAD);
 
-            Character sym = transBHead.GetStateTransition().GetSymbol();
+            Character sym = transBHead.getStateTransition().getSymbol();
 
-            transATail.SetTransition(transBTail,sym,0);
+            transATail.setTransition(transBTail, sym, 0);
 
-            //transBHead = null;
-            TransitionTable.InvalidateTable();
-            andPair = new NFATransitionPair(transA.getRef("head"),transBTail,false);
+            andPair = new NFATransitionPair(transA.getRef(NFATransitionPair.HEAD),transBTail,false);
         }
         else
         {
-            transA.getRef("tail").SetTransition(transB.getRef("head"),'λ',0);
-            andPair = new NFATransitionPair(transA.getRef("head"), transB.getRef("tail"), false);
+            transA.getRef(NFATransitionPair.TAIL).setTransition(transB.getRef(NFATransitionPair.HEAD), LAMBDA, 0);
+            andPair = new NFATransitionPair(transA.getRef(NFATransitionPair.HEAD), transB.getRef(NFATransitionPair.TAIL), false);
         }
 
         return andPair;
     }
 
-    NFATransitionPair KleeneStar(NFATransitionPair trans)
+    NFATransitionPair kleeneStar(NFATransitionPair trans)
     {
         NFAState outerA = new NFAState(StateCount++);
         NFAState outerB = new NFAState(StateCount++);
 
-        outerA.SetTransition(outerB,'λ',1);
-        outerA.SetTransition(trans.getRef("head"),'λ',0);
+        outerA.setTransition(outerB, LAMBDA, 1);
+        outerA.setTransition(trans.getRef(NFATransitionPair.HEAD), LAMBDA, 0);
 
-        trans.getRef("tail").SetTransition(trans.getRef("head"),'λ',0);
-        trans.getRef("tail").SetTransition(outerB,'λ',1);
+        trans.getRef(NFATransitionPair.TAIL).setTransition(trans.getRef(NFATransitionPair.HEAD), LAMBDA, 0);
+        trans.getRef(NFATransitionPair.TAIL).setTransition(outerB, LAMBDA, 1);
 
-        TransitionTable.InvalidateTable();
         return new NFATransitionPair(outerA,outerB,false);
     }
 
-    void ParseExpression(String expression)
+    NFATransitionPair kleenePlus(NFATransitionPair trans)
     {
+        trans.getRef(NFATransitionPair.TAIL).setTransition(trans.getRef(NFATransitionPair.HEAD),LAMBDA,0);
+        return trans;
+    }
+
+    NFATransitionPair zeroOrOneOccurrence(NFATransitionPair trans)
+    {
+        NFAState outerA = new NFAState(StateCount++);
+        NFAState outerB = new NFAState(StateCount++);
+
+        outerA.setTransition(trans.getRef(NFATransitionPair.HEAD),LAMBDA,0);
+        outerA.setTransition(outerB,LAMBDA,1);
+        trans.getRef(NFATransitionPair.TAIL).setTransition(outerB,LAMBDA,0);
+
+        return new NFATransitionPair(outerA,outerB,false);
+    }
+
+    void parseExpression()
+    {
+        String expression = regExp.toString();
         Stack<Object> stk = new Stack<Object>();
 
         for(int i=0;i<expression.length();i++)
@@ -104,7 +134,7 @@ class NFAutomaton
                 NFAState start = new NFAState(StateCount++);
                 NFAState end = new NFAState(StateCount++);
 
-                start.SetTransition(end,sym,0);
+                start.setTransition(end, sym, 0);
 
                 stk.push(new NFATransitionPair(start,end,true));
             }
@@ -112,47 +142,57 @@ class NFAutomaton
             {
                 if(sym.equals('*'))
                 {
-                    NFATransitionPair result = KleeneStar((NFATransitionPair) stk.pop());
+                    NFATransitionPair result = kleeneStar((NFATransitionPair) stk.pop());
                     stk.push(result);
                 }
                 else if(sym.equals('+'))
                 {
-                    System.out.println("Encountered +, Stack : " + stk.size());
+                    NFATransitionPair result = kleenePlus((NFATransitionPair) stk.pop());
+                    stk.push(result);
+                }
+                else if(sym.equals('?'))
+                {
+                    NFATransitionPair result = zeroOrOneOccurrence((NFATransitionPair) stk.pop());
+                    stk.push(result);
+                }
+                else if(sym.equals('|'))
+                {
                     NFATransitionPair branchOne = (NFATransitionPair) stk.pop();
                     NFATransitionPair branchTwo = (NFATransitionPair) stk.pop();
 
-                    stk.push(ThompsonOR(branchTwo,branchOne));
+                    stk.push(thompsonUnion(branchTwo, branchOne));
                 }
                 else if(sym.equals('.'))
                 {
-                    System.out.println("Encountered . , Stack : " + stk.size());
                     NFATransitionPair branchOne = (NFATransitionPair) stk.pop();
                     NFATransitionPair branchTwo = (NFATransitionPair) stk.pop();
 
-                    stk.push(ThompsonAND(branchTwo,branchOne));
+                    stk.push(thompsonConcatenation(branchTwo, branchOne));
                 }
             }
         }
 
         NFATransitionPair nfa = (NFATransitionPair) stk.pop();
-        StartState.SetTransition(nfa.getRef("head"),'λ',0);
-        nfa.getRef("tail").SetTransition(FinalState,'λ',0);
+
+        StartState.setTransition(nfa.getRef(NFATransitionPair.HEAD), LAMBDA, 0);
+        nfa.getRef(NFATransitionPair.TAIL).setTransition(FinalState, LAMBDA, 0);
 
         TransitionTable = new NFATransitionTable(StartState);
-        TransitionTable.InvalidateTable();
-        TransitionTable.UpdateTable();
+        TransitionTable.invalidateTable();
+        TransitionTable.updateTable();
     }
 
-
-    void test()
+    void printTransitionTable()
     {
-        if(TransitionTable == null)
-            System.out.println("Nll");
+        StringBuilder output = new StringBuilder();
+        Set<String> table = TransitionTable.getTransitionTable();
 
-        Set<String> table = TransitionTable.GetTransitionTable();
+        for(String str : table){
+            output.append(str);
+            output.append('\n');
+        }
 
-        for(String st : table)
-            System.out.println(st);
+        System.out.println(output.toString());
     }
 
 }

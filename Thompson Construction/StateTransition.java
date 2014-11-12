@@ -1,4 +1,4 @@
-package com.company;
+package com.nfautomaton;
 
 class StateTransition
 {
@@ -11,28 +11,28 @@ class StateTransition
         target = null;
     }
 
-    void SetTransitionTarget(NFAState nfs,char sym)
+    void setTransitionTarget(NFAState nfs,char sym)
     {
         symbol = sym;
         target = nfs;
     }
-    char GetSymbol()
+    char getSymbol()
     {
         if(symbol == null)
             return '~';
         else
             return symbol;
     }
-    NFAState GetTransition()
+    NFAState getTransition()
     {
         return target;
     }
 
-    int GetTransitionTarget()
+    int getTransitionTarget()
     {
         if(target == null)
             return -1;
         else
-            return target.GetState();
+            return target.getState();
     }
 }

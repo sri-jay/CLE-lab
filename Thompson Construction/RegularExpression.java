@@ -1,124 +1,152 @@
-package com.company;
-
-import java.util.Stack;
+package com.nfautomaton;
+import java.util.*;
 
 public class RegularExpression {
 
-    private String infixRegularExpression;
-    private String postfixRegularExpression;
+    /** Operators precedence map. */
+    private static final Map<Character, Integer> precedenceMap;
 
-    public RegularExpression(String infixStr)
+    // Strings that hold the regular expression
+    private String infixRegExp;
+    private String postfixRegExp;
+
+    // Some constants to enhance code readability
+    public static  final String INFIX_REGEXP = "REF_INFIX_REGEXP";
+    public static final String POSTFIX_REGEXP = "REF_POSTFIX_REGEXP";
+
+    static
     {
-        infixRegularExpression = infixStr;
+        Map<Character, Integer> map = new HashMap<Character, Integer>();
+        map.put('(', 1);
+        map.put('|', 2);
+        map.put('.', 3); // explicit concatenation operator
+        map.put('?', 4);
+        map.put('*', 4);
+        map.put('+', 4);
+        map.put('^', 5);
+        precedenceMap = Collections.unmodifiableMap(map);
+    };
+
+    RegularExpression(String regExp)
+    {
+        infixRegExp = regExp;
+        postfixRegExp = null;
+        infixToPostfix();
     }
 
-    public String getPostfix()
+    /**
+     * Returns the postfix expression
+     * @return postFixRegExp
+     */
+    public String getRegExp(String returnOption)
     {
-        return postfixRegularExpression;
+        String regExp = null;
+        if(returnOption.equals(INFIX_REGEXP))
+            regExp = new String(infixRegExp);
+        if(returnOption.equals(POSTFIX_REGEXP))
+            regExp = new String(postfixRegExp);
+
+        return regExp;
     }
-    public void toPostFix()
+
+    @Override
+    public String toString()
     {
-        Stack<Character> oprStack = new Stack<Character>();
-        StringBuffer buf = new StringBuffer(infixRegularExpression.length());
+        if(postfixRegExp == null)
+            infixToPostfix();
 
-        for(int i=0;i<infixRegularExpression.length();i++)
-        {
-            char str = (infixRegularExpression.charAt(i));
-            if(valueOfOpr(str) == 0)
-            {
-                buf.append(str);
+        return getRegExp(POSTFIX_REGEXP);
+    }
 
-                if(i != infixRegularExpression.length()-1 && !oprStack.isEmpty())
-                {
-                    char nextChar = (infixRegularExpression.charAt(i+1));
-                    char opStack = oprStack.peek();
+    /**
+     * Get character precedence.
+     *
+     * @param c character
+     * @return corresponding precedence
+     */
+    private static Integer getPrecedence(Character c)
+    {
+        Integer precedence = precedenceMap.get(c);
+        return precedence == null ? 6 : precedence;
+    }
 
-                    int compare =  compareOperators (opStack,nextChar);
+    /**
+     * Transform regular expression by inserting a '.' as explicit concatenation
+     * operator.
+     */
+    private static String formatRegEx(String regex)
+    {
+        StringBuilder res = new StringBuilder();
+        List<Character> allOperators = Arrays.asList('|', '?', '+', '*', '^');
+        List<Character> binaryOperators = Arrays.asList('^', '|');
 
-                    if(compare >0 && valueOfOpr(opStack) != 5)
-                    {
-                        opStack = oprStack.pop();
-                        buf.append(opStack);
-                    }
-                }
-            }
+        for (int i = 0; i < regex.length(); i++) {
+            Character c1 = regex.charAt(i);
 
-            if(i == infixRegularExpression.length()-1)
-            {
-                if(valueOfOpr(str) > 0 && valueOfOpr(str) != 4)
-                    throw new RuntimeException("Invalid Expression");
+            if (i + 1 < regex.length()) {
+                Character c2 = regex.charAt(i + 1);
 
-                while(!oprStack.isEmpty())
-                {
-                    char temp = oprStack.pop();
-                    if(valueOfOpr(temp) != 3)
-                        buf.append(temp);
-                }
-            }
-            else if (valueOfOpr(str) > 0)
-            {
+                res.append(c1);
 
-                if(oprStack.isEmpty())
-                    oprStack.push(str);
-
-                else
-                {
-
-                    if(valueOfOpr(str) == 4)
-                    {
-                        while(!oprStack.isEmpty())
-                        {
-                            char temp = oprStack.pop();
-
-                            if(valueOfOpr(temp) != 3)
-                                buf.append(temp);
-                        }
-                    }
-                    else
-                    {
-                        char opStack = oprStack.pop();
-                        int compare =  compareOperators (opStack,str);
-
-                        if(compare >0)
-                        {
-                            oprStack.push(str);
-                            oprStack.push(opStack);
-                        }
-                        else
-                        {
-                            oprStack.push(opStack);
-                            oprStack.push(str);
-                        }
-                    }
+                if (!c1.equals('(') && !c2.equals(')') && !allOperators.contains(c2) && !binaryOperators.contains(c1)) {
+                    res.append('.');
                 }
             }
         }
+        res.append(regex.charAt(regex.length() - 1));
 
-        postfixRegularExpression = buf.toString();
-        System.out.println("Postifx regular expression: "+postfixRegularExpression);
+        return res.toString();
     }
 
-
-    public int compareOperators(char op1 , char op2)
+    /**
+     * Convert regular expression from infix to postfix notation using
+     * Shunting-yard algorithm.
+     *
+     * @return postfix notation
+     */
+    public void infixToPostfix()
     {
-        return valueOfOpr( op1) - valueOfOpr( op2) ;
-    }
+        StringBuilder postfix = new StringBuilder();
 
+        Stack<Character> stack = new Stack<Character>();
 
-    public int valueOfOpr(char op){
-        int value = 0;
+        String formattedRegEx = formatRegEx(infixRegExp);
 
-        if(op == '*')
-            value = 2;
-        if(op == '+')
-            value = 1;
-        if(op == '.')
-            value = 1;
-        if(op == '(')
-            value = 3;
-        if(op == ')')
-            value = 4;
+        for (Character c : formattedRegEx.toCharArray()) {
+            switch (c) {
+                case '(':
+                    stack.push(c);
+                    break;
 
-        return value;
+                case ')':
+                    while (!stack.peek().equals('(')) {
+                        postfix.append(stack.pop());
+                    }
+                    stack.pop();
+                    break;
+
+                default:
+                    while (stack.size() > 0) {
+                        Character peekedChar = stack.peek();
+
+                        Integer peekedCharPrecedence = getPrecedence(peekedChar);
+                        Integer currentCharPrecedence = getPrecedence(c);
+
+                        if (peekedCharPrecedence >= currentCharPrecedence) {
+                            postfix.append(stack.pop());
+                        } else {
+                            break;
+                        }
+                    }
+                    stack.push(c);
+                    break;
+            }
+
+        }
+
+        while (stack.size() > 0)
+            postfix.append(stack.pop());
+
+        postfixRegExp = postfix.toString();
     }
 }
