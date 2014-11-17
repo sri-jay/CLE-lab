@@ -1,7 +1,181 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<script src="parser.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+		<link rel="stylesheet" href="styles/styles.css">
+
+		<script src="semantic-ui/packaged/javascript/semantic.min.js"></script>
+
+		<link rel="stylesheet" href="semantic-ui/packaged/css/semantic.min.css"/>
+
+		<script src="sweetalert-lib/sweet-alert.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="sweetalert-lib/sweet-alert.css">
+
+		<script src="scripts/parser.js"></script>
+		<script src="scripts/pre.js"></script>
+		<script src="scripts/utils.js"></script>
 	</head>
-	<body></body>
+
+	<body>
+		<div class="ui teal large vertical menu" id="menu">
+			<a class="item">
+				Site Title
+			</a>
+			<div class="item">
+				<b>Terminals</b>
+				<div class="menu">
+					<div class="item">
+						Count
+						<div class="ui teal label" id="ter-cnt">1</div>
+					</div>
+					<div class="item">
+						Status
+						<div class="ui grey label" id="ter-stat">None</div>
+					</div>
+				</div>
+			</div>
+			<div class="item">
+				<b>Non Terminals</b>
+				<div class="menu">
+					<div class="item">
+						Count
+						<div class="ui teal label" id="nter-cnt">1</div>
+					</div>
+					<div class="item">
+						Status
+						<div class="ui grey label" id="nter-stat">None</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--Sidebar menu ends here-->
+		<div class="container">
+			<!--Actual code begins-->
+			<div class="blck" id="symbol-input">
+				<div class="ui form segment" id="s-input">
+					<p align="center"><strong>Terminals & Non Terminals</strong></p>
+					<div class="ui message">
+						<p>Enter the <code>terminals</code> and non <code>terminals</code> as a string, each terminal separated by a comma.</p>
+						<ul>
+							<li>Do not use comma, asterisk, apostrophe, period or double quotes in your terminals/non terminals please</li>
+						</ul>
+					</div>
+					<div class="field">
+						<label><strong>Terminal Symbols</strong></label>
+						<div class="ui massive labeled input">
+							<input type="text" placeholder="Enter terminals here."  id="ter-input" required>
+							<div class="ui corner label">
+								<i class="icon red asterisk"></i>
+							</div>
+						</div>
+					</div>
+					<div class="field">
+						<label>
+							<strong>Non Terminals</strong>
+						</label>
+						<div class="ui massive labeled input">
+							<input type="text" placeholder="Enter non Terminals here" value="" required="Enter non terminals here" id="nter-input">
+							<div class="ui corner label">
+								<i class="icon red asterisk"></i>
+							</div>
+						</div>
+					</div>
+					<button class="ui mini orange fluid animated fade button" id="check-symbols">
+						<div class="visible content">
+							Done?
+						</div>
+						<div class="hidden content">
+							Check Symbols?
+						</div>
+					</button>
+				</div>
+			</div>
+			<div class="blck" id="production-input">
+				<div class="ui form segment" id="p-input">
+					<p align="center"><strong>Productions</strong></p>
+					<div class="ui message">
+						<p>Enter productions here</p>
+						<ul>
+							<li>Do not use comma, asterisk, apostrophe, period or double quotes in your terminals/non terminals please</li>
+						</ul>
+					</div>
+
+					<hr/>
+					<div class="two fields">
+						<div class="field">
+							<label>LHS</label>
+							<div class="ui radio checkbox">
+								<input type="radio" name="fruit" id="1">
+								<label for="1">A</label>
+							</div>
+							<div class="ui radio checkbox">
+								<input type="radio" name="fruit" id="2">
+								<label for="2">B</label>
+							</div>
+							<div class="ui radio checkbox">
+								<input type="radio" name="fruit" id="3">
+								<label for="3">C</label>
+							</div>
+						</div>
+						<div class="field">
+							<label>LHS</label>
+							<div class="ui mini input">
+								<input type="text" placeholder="Search mini...">
+							</div>
+						</div>
+					</div>
+					<hr/>
+					<div class="two fields">
+						<div class="field">
+							<label>LHS</label>
+							<div class="ui radio checkbox">
+								<input type="radio" name="fruit" id="1">
+								<label for="1">A</label>
+							</div>
+							<div class="ui radio checkbox">
+								<input type="radio" name="fruit" id="2">
+								<label for="2">B</label>
+							</div>
+							<div class="ui radio checkbox">
+								<input type="radio" name="fruit" id="3">
+								<label for="3">C</label>
+							</div>
+						</div>
+						<div class="field">
+							<label>LHS</label>
+							<div class="ui mini input">
+								<input type="text" placeholder="Search mini...">
+							</div>
+						</div>
+					</div>
+					<hr/>
+					<div class="two fields">
+						<div class="field">
+							<label>LHS</label>
+							<div class="ui radio checkbox">
+								<input type="radio" name="fruit" id="1">
+								<label for="1">A</label>
+							</div>
+							<div class="ui radio checkbox">
+								<input type="radio" name="fruit" id="2">
+								<label for="2">B</label>
+							</div>
+							<div class="ui radio checkbox">
+								<input type="radio" name="fruit" id="3">
+								<label for="3">C</label>
+							</div>
+						</div>
+						<div class="field">
+							<label>LHS</label>
+							<div class="ui mini input">
+								<input type="text" placeholder="Search mini...">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		<!--Container End-->
+		</div>
+	</body>
 </html>
