@@ -3,7 +3,9 @@
 	<head>
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
+		<link rel="stylesheet" href="styles/keyframes.css">
 		<link rel="stylesheet" href="styles/styles.css">
+		<link rel="stylesheet" href="styles/scrollbars.css">
 
 		<script src="semantic-ui/packaged/javascript/semantic.min.js"></script>
 
@@ -20,7 +22,7 @@
 	<body>
 		<div class="ui teal large vertical menu" id="menu">
 			<a class="item">
-				Site Title
+				LL(1) Parser
 			</a>
 			<div class="item">
 				<b>Terminals</b>
@@ -48,6 +50,20 @@
 					</div>
 				</div>
 			</div>
+
+			<div class="item">
+				<b>Productions</b>
+				<div class="menu">
+					<div class="item">
+						Count
+						<div class="ui teal label" id="prod-cnt">1</div>
+					</div>
+					<div class="item">
+						Status
+						<div class="ui grey label" id="prod-stat">None</div>
+					</div>
+				</div>
+			</div>
 		</div>
 		<!--Sidebar menu ends here-->
 		<div class="container">
@@ -64,7 +80,7 @@
 					<div class="field">
 						<label><strong>Terminal Symbols</strong></label>
 						<div class="ui massive labeled input">
-							<input type="text" placeholder="Enter terminals here."  id="ter-input" required>
+							<input type="text" placeholder="Enter terminals here."  id="ter-input" required value="a,b,c">
 							<div class="ui corner label">
 								<i class="icon red asterisk"></i>
 							</div>
@@ -75,7 +91,7 @@
 							<strong>Non Terminals</strong>
 						</label>
 						<div class="ui massive labeled input">
-							<input type="text" placeholder="Enter non Terminals here" value="" required="Enter non terminals here" id="nter-input">
+							<input type="text" placeholder="Enter non Terminals here" value="A,B,C" required="Enter non terminals here" id="nter-input">
 							<div class="ui corner label">
 								<i class="icon red asterisk"></i>
 							</div>
@@ -92,84 +108,35 @@
 				</div>
 			</div>
 			<div class="blck" id="production-input">
-				<div class="ui form segment" id="p-input">
-					<p align="center"><strong>Productions</strong></p>
-					<div class="ui message">
-						<p>Enter productions here</p>
-						<ul>
-							<li>Do not use comma, asterisk, apostrophe, period or double quotes in your terminals/non terminals please</li>
-						</ul>
-					</div>
+				<div class="ui loading form segment" id="p-input">
+					<div class="ui segment" id="p-input-area">
 
-					<hr/>
-					<div class="two fields">
-						<div class="field">
-							<label>LHS</label>
-							<div class="ui radio checkbox">
-								<input type="radio" name="fruit" id="1">
-								<label for="1">A</label>
-							</div>
-							<div class="ui radio checkbox">
-								<input type="radio" name="fruit" id="2">
-								<label for="2">B</label>
-							</div>
-							<div class="ui radio checkbox">
-								<input type="radio" name="fruit" id="3">
-								<label for="3">C</label>
-							</div>
-						</div>
-						<div class="field">
-							<label>LHS</label>
-							<div class="ui mini input">
-								<input type="text" placeholder="Search mini...">
-							</div>
-						</div>
 					</div>
-					<hr/>
-					<div class="two fields">
-						<div class="field">
-							<label>LHS</label>
-							<div class="ui radio checkbox">
-								<input type="radio" name="fruit" id="1">
-								<label for="1">A</label>
+					<div class="three small ui fluid buttons" id="production-control">
+						<div id="add-more" class="ui orange animated fade button" onclick="writeOneElement()">
+							<div class="visible content">
+								+
 							</div>
-							<div class="ui radio checkbox">
-								<input type="radio" name="fruit" id="2">
-								<label for="2">B</label>
-							</div>
-							<div class="ui radio checkbox">
-								<input type="radio" name="fruit" id="3">
-								<label for="3">C</label>
+							<div class="hidden content">
+								Add More Productions?
 							</div>
 						</div>
-						<div class="field">
-							<label>LHS</label>
-							<div class="ui mini input">
-								<input type="text" placeholder="Search mini...">
+						<div class="or"></div>
+						<div id="check-productions" class="ui blue animated fade button">
+							<div class="visible content">
+								Done?
+							</div>
+							<div class="hidden content">
+								Analyse Productons?
 							</div>
 						</div>
-					</div>
-					<hr/>
-					<div class="two fields">
-						<div class="field">
-							<label>LHS</label>
-							<div class="ui radio checkbox">
-								<input type="radio" name="fruit" id="1">
-								<label for="1">A</label>
+						<div class="or"></div>
+						<div id="reset-productions" class="ui red animated fade button">
+							<div class="visible content">
+								Reset all Productions.
 							</div>
-							<div class="ui radio checkbox">
-								<input type="radio" name="fruit" id="2">
-								<label for="2">B</label>
-							</div>
-							<div class="ui radio checkbox">
-								<input type="radio" name="fruit" id="3">
-								<label for="3">C</label>
-							</div>
-						</div>
-						<div class="field">
-							<label>LHS</label>
-							<div class="ui mini input">
-								<input type="text" placeholder="Search mini...">
+							<div class="hidden content">
+								Are you sure?
 							</div>
 						</div>
 					</div>

@@ -1,19 +1,32 @@
 $(document).ready(function(){
     /*
         Check the terminals and non terminals
-    * */
+    */
 
     var grammar = new Grammar();
 
-    var terError = false;
-    var nterError = false;
+    /*
+        Global how to error flags.
+     */
+    var prodDebug = true;
 
     $("#check-symbols").click(function(){
+        /*
+         Phase 1 Symbol check error flags.
+         */
+        var
+            terError = false,
+            nterError = false;
+
         var
             terInp = document.getElementById("ter-input"),
             nterInp = document.getElementById("nter-input"),
+
             terStat = document.getElementById("ter-stat"),
             nterStat = document.getElementById("nter-stat"),
+
+            terCnt = document.getElementById("ter-cnt"),
+            nterCnt = document.getElementById("nter-cnt"),
 
             segBack = document.getElementById("symbol-input"),
             button = document.getElementById("check-symbols");
@@ -21,6 +34,9 @@ $(document).ready(function(){
         var
             terminals = terInp.value.split(","),
             nterminals = nterInp.value.split(",");
+
+        terCnt.innerHTML = terminals.length;
+        nterCnt.innerHTML = nterminals.length;
 
         if(terminals.indexOf('\'') >= 0) {
             terInp.parentNode.classList.add("error");
@@ -96,7 +112,7 @@ $(document).ready(function(){
                     function (isConfirm) {
                         if (isConfirm) {
                             grammar.specifyNTerminals(nterminals);
-                            grammar.specifyTerminals(terminals)
+                            grammar.specifyTerminals(terminals);
                             swal(
                                 {
                                     title: "Added Symbols!",
@@ -109,6 +125,11 @@ $(document).ready(function(){
                                 },
                                 function (isConfirm) {
                                     if(isConfirm){
+                                        var data = grammar.getAllSymbols();
+                                        reset(grammar.getAllSymbols().nter);
+                                        document.getElementById("p-input").classList.remove("loading");
+                                        for(var j=0;j<3;j++)
+                                            writeOneElement();
                                         goto("production-input");
                                     }
                                 }
@@ -123,7 +144,137 @@ $(document).ready(function(){
         }
     });
 
-    var data = grammar.getAllSymbols();
+    $("#check-productions").click(function(){
 
-    var lhsOpt = data.nter;
+        var
+            globalError = false,
+            failCount = 0,
+            count = 0;
+
+        var
+            prodStat = document.getElementById("prod-stat"),
+            prodCnt = document.getElementById("prod-cnt");
+
+        var symbols = grammar.getAllSymbols();
+
+        $("#p-input-area").children().each(function(){
+            var prodError = false;
+
+            var
+                lhsParent = $(this).find(".prodLHS"),
+                rhsParent = $(this).find(".prodRHS");
+
+            var
+                lhs = lhsParent.val(),
+                rhs = rhsParent.val();
+
+            var
+                lhsError = false,
+                rhsError = false;
+
+            if(typeof rhs != "undefined" && typeof lhs != "undefined"){
+                count++;
+                rhs = rhs.split(",");
+
+                console.log(symbols);
+                console.log(lhs);
+                console.log(rhs);
+
+                if(symbols.nter.indexOf(lhs) < 0)
+                    lhsError = true;
+
+                for(var v in rhs){
+                    if(symbols.ter.indexOf(rhs[v]) < 0){
+                        rhsError = true;
+                        break;
+                    }
+                }
+
+                prodError = lhsError | rhsError;
+                if(prodError && prodDebug){
+                    swal("Seems like you have an error!","The location of error is highlighted in red!","error");
+                    prodDebug = false;
+                }
+                if(prodError){
+                    rhsParent.parent().addClass("error");
+
+                    rhsParent.parent().find(".status-marker").removeClass("blue");
+                    rhsParent.parent().find(".status-marker").removeClass("green");
+                    rhsParent.parent().find(".status-marker").addClass("red");
+
+                    rhsParent.parent().find(".status-marker").find(".status-mark").html("Rejected");
+
+                    rhsParent.parent().find(".status-marker").find(".status-icon").removeClass("lab");
+                    rhsParent.parent().find(".status-marker").find(".status-icon").removeClass("checkmark");
+                    rhsParent.parent().find(".status-marker").find(".status-icon").addClass("warning");
+                }
+                else{
+                    rhsParent.parent().removeClass("error");
+
+                    rhsParent.parent().find(".status-marker").removeClass("blue");
+                    rhsParent.parent().find(".status-marker").removeClass("red");
+                    rhsParent.parent().find(".status-marker").addClass("green");
+
+                    rhsParent.parent().find(".status-marker").find(".status-mark").html("Accepted");
+                    rhsParent.parent().find(".status-marker").find(".status-icon").removeClass("lab");
+                    rhsParent.parent().find(".status-marker").find(".status-icon").removeClass("warning");
+                    rhsParent.parent().find(".status-marker").find(".status-icon").addClass("checkmark");
+                }
+
+                globalError = globalError | prodError;
+            }
+            prodCnt.innerHTML = count;
+        });
+
+        if(globalError){
+            $("#production-input").removeClass("pass");
+            $("#production-input").addClass("fail");
+
+            prodStat.classList.remove("grey");
+            prodStat.classList.remove("green");
+            prodStat.classList.add("red");
+
+            prodStat.innerHTML = "Failed";
+        }
+        else {
+            $("#production-input").removeClass("fail");
+            $("#production-input").addClass("pass");
+
+            prodStat.classList.remove("grey");
+            prodStat.classList.remove("red");
+            prodStat.classList.add("green");
+
+            prodStat.innerHTML = "Passed";
+
+            swal({
+                type: "success",
+                title: "Looking Good!",
+                text : "Productions look good!",
+                showCancelButton: true,
+                confirmButtonColor: "green",
+                confirmButtonText : "Proceed?",
+                cancelButtonText  : "Not Yet!",
+                closeOnConfirm: true,
+                closeOnCancel: true
+            });
+        }
+        globalError = false;
+    });
+
+    $("#reset-productions").click(function() {
+        reset(grammar.nonTerminals);
+        var back = document.getElementById("production-input");
+
+        back.classList.remove("pass");
+        back.classList.remove("fail");
+        //back.classList.add("reset");
+
+        var stat = document.getElementById("prod-stat");
+        stat.classList.remove("grey");
+        stat.classList.remove("green");
+        stat.classList.remove("red");
+
+        stat.classList.add("grey");
+        stat.innerHTML = "Reset";
+    });
 });

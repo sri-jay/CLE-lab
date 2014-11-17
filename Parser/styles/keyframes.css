@@ -1,0 +1,16 @@
+@-webkit-keyframes toPass {
+    to{
+        background-color: #119000;
+    }
+}
+
+@-webkit-keyframes  toFail{
+    to {
+        background-color: #DF0209;
+    }
+}
+@-webkit-keyframes  toReset{
+    to {
+        background-color: orangered;
+    }
+}
