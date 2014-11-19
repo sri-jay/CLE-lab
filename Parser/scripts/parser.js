@@ -53,6 +53,10 @@ function Grammar() {
 		return symbols;
 	};
 
+	this.clearAllProductions = function(){
+		this.productions = {};
+	};
+
 	this.printAllProductions = function () {
 			for(var m in this.productions)
 			{

@@ -84,6 +84,8 @@ $(document).ready(function(){
             swal("You have errors!","You put in an invalid character somewhere!","error");
             button.classList.remove("green");
             button.classList.add("orange");
+
+            document.getElementById("p-input").classList.add("loading");
         }
 
 
@@ -128,9 +130,10 @@ $(document).ready(function(){
                                         var data = grammar.getAllSymbols();
                                         reset(grammar.getAllSymbols().nter);
                                         document.getElementById("p-input").classList.remove("loading");
-                                        for(var j=0;j<3;j++)
-                                            writeOneElement();
                                         goto("production-input");
+                                    }
+                                    else {
+                                        document.getElementById("p-input").classList.add("loading");
                                     }
                                 }
                             );
@@ -256,7 +259,32 @@ $(document).ready(function(){
                 cancelButtonText  : "Not Yet!",
                 closeOnConfirm: true,
                 closeOnCancel: true
-            });
+            },
+                function(isConfirm){
+                    if(isConfirm){
+                        $('#mdl').modal('toggle');
+                        console.clear();
+                        $("#prod-rev-data").html("");
+                        $("#p-input-area").children().each(function(){
+                            var
+                                lhsParent = $(this).find(".prodLHS"),
+                                rhsParent = $(this).find(".prodRHS");
+
+                            var
+                                lhs = lhsParent.val(),
+                                rhs = rhsParent.val();
+
+                            if(typeof rhs != "undefined" && typeof lhs != "undefined") {
+                                console.log(rhs);
+                                console.log(lhs);
+
+                                rhs = rhs.split(",");
+                                $("#prod-rev-data").append("<tr><td>"+lhs + "</td><td>" + rhs + "</td></tr>");
+                            }
+                        });
+                    }
+                }
+            );
         }
         globalError = false;
     });
@@ -276,5 +304,36 @@ $(document).ready(function(){
 
         stat.classList.add("grey");
         stat.innerHTML = "Reset";
+    });
+
+    $("#prod-rejected").click(function(){
+        grammar.clearAllProductions();
+        $("#prod-message").html("");
+    });
+
+
+    $("#prod-verified").click(function(){
+        grammar.clearAllProductions();
+        $("#p-input-area").children().each(function(){
+            var
+                lhsParent = $(this).find(".prodLHS"),
+                rhsParent = $(this).find(".prodRHS");
+
+            var
+                lhs = lhsParent.val(),
+                rhs = rhsParent.val();
+
+            if(typeof rhs != "undefined" && typeof lhs != "undefined") {
+
+                grammar.addProduction(new Production(lhs,rhs.split(",")));
+            }
+        });
+        console.log(grammar.printAllProductions());
+        $("#prod-message").html("");
+        $("#prod-message").append("<div class='ui message inverted'><strong>Grammar rules added successfully, you can still edit them though.</strong></div>");
+        setTimeout(function(){
+            $("#mdl").modal('hide');
+            console.log("%c- User notified on grammar.","color:red");
+        },1200);
     });
 });

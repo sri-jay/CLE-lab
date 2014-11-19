@@ -34,22 +34,31 @@ $('.ui.radio.checkbox')
 ;
 
 function writeOneElement() {
-    var start = "<hr/>";
-    start += "<div class='two fields'>";
+    var start = "<div class='two fields'>";
+    start += "<hr/>";
     start += "  <div class='field'>";
     start += "  <label>LHS</label>";
+
+    start += "<select class='prodLHS' class='ui fluid selection dropdown'>";
+    start += "<div class='menu'>";
     for(var v in nter) {
       //  start += "      <div class='ui radio checkbox'>";
-        start += nter[v]+" : <input type='radio' class='prodLHS' value='"+nter[v]+"'name='pLHS"+prdInputCnt+"'>&nbsp;";
+        //start += nter[v]+" :<input type='radio' class='prodLHS' value='"+nter[v]+"'name='pLHS"+prdInputCnt+"'>&nbsp;&nbsp;";
+        start += '<div  class="item">';
+        start += '<option>'+nter[v]+"</option>";
+        start += '</div>';
       //  start += "          <label>"+nter[v]+"</label>";
        // start += "      </div>"
     }
-    start += "  </div>";
+    start += "</div>";
+    start += "</select>";
+    start += "</div>";
     start += "  <div class='field'>";
     start += "      <label>RHS</label>";
     start += "      <div class='ui mini action medium labeled input'>";
     start += "          <input type='text' class='prodRHS' placeholder='Enter Productions here' name='pRHS"+prdInputCnt+"'>";
-    start += '          <div class="status-marker ui blue tiny right labeled icon button"><div class="status-mark">Pending</div><i class="status-icon large square lab icon"></i></div>'
+    start += '          <div class="ui icon labeled buttons"><div class="status-marker ui blue tiny right labeled icon button"><div class="status-mark">Pending</div><i class="status-icon lab icon"></i></div><div onclick="removeField(this)" class="ui right labeled icon tiny youtube button">Delete?<i class="remove icon"></i></div></div>';
+  //  start += '<div class="status-marker ui blue tiny right labeled icon button"><div class="status-mark">Pending</div><i class="status-icon large square lab icon"></i></div>';
     start += "      </div>";
     start += "  </div>";
     start += "</div>";
@@ -61,6 +70,10 @@ function writeOneElement() {
     $("#p-input-area").append(start);
 }
 
+
+function removeField(data){
+    var dt = $(data).parent().parent().parent().parent().remove();
+}
 
 function goto(target) {
     $('html,body').animate({

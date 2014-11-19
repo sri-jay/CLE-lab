@@ -17,6 +17,15 @@
 		<script src="scripts/parser.js"></script>
 		<script src="scripts/pre.js"></script>
 		<script src="scripts/utils.js"></script>
+		<script>
+			$(document).ready(function(){
+				$('.ui.dropdown')
+						.dropdown()
+				;
+				$('.ui.dropdown').click(function(){$(this).toggle();})
+				;
+			});
+		</script>
 	</head>
 
 	<body>
@@ -146,3 +155,36 @@
 		</div>
 	</body>
 </html>
+
+<div class="ui basic very large modal" id="mdl">
+	<div class="header">
+		<strong>Production analysis</strong>
+		<hr class="inverted">
+	</div>
+	<div class="content">
+		<table class="ui inverted table segment" >
+			<thead>
+				<tr>
+					<th>LHS</th>
+					<th>RHS</th>
+				</tr>
+			</thead>
+			<tbody id="prod-rev-data">
+			</tbody>
+		</table>
+	</div>
+	<div class="footer message" id="prod-message">
+
+	</div>
+	<!--<div class="actions">-->
+		<div class="two fluid ui buttons" id="prod-reject">
+			<div class="ui button red">
+				Go Back.
+			</div>
+			<div class="or"></div>
+			<div class="ui button green" id="prod-verified">
+				Add all productions to Grammar?
+			</div>
+		</div>
+	<!--</div>-->
+</div>
