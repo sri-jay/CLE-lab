@@ -15,8 +15,9 @@
 		<link rel="stylesheet" type="text/css" href="sweetalert-lib/sweet-alert.css">
 
 		<script src="scripts/parser.js"></script>
-		<script src="scripts/pre.js"></script>
 		<script src="scripts/utils.js"></script>
+		<script src="scripts/pre.js"></script>
+
 		<script>
 			$(document).ready(function(){
 				$('.ui.dropdown')
@@ -70,6 +71,14 @@
 					<div class="item">
 						Status
 						<div class="ui grey label" id="prod-stat">None</div>
+					</div>
+					<div class="item">
+						Left Recursion
+						<div class="ui grey label" id="prod-recur">None</div>
+					</div>
+					<div class="item">
+						Left Factoring
+						<div class="ui grey label" id="prod-fact">None</div>
 					</div>
 				</div>
 			</div>
@@ -151,14 +160,36 @@
 					</div>
 				</div>
 			</div>
+
+			<div class="blck" id="production-summary">
+				<div class="ui segment" id="production-analysis">
+					<table class="ui red table segment">
+						<thead>
+							<tr>
+								<th>Production</th>
+								<th>Left Recursion</th>
+								<th>Left Factoring</th>
+							</tr>
+						</thead>
+						<tbody id="analysis-results"></tbody>
+					</table>
+					<div id="analysis-action">
+						<button colspan="3" id="handle-errors" class="ui fluid orange animated fade button">
+							<div class="visible content" id="error-a">Fix Grammar</div>
+							<div class="hidden content" id="error-b">Remove Errors</div>
+						</button>
+					</div>
+				</div>
+			</div>
 		<!--Container End-->
 		</div>
 	</body>
 </html>
 
+<!--Production entry summary-->
 <div class="ui basic very large modal" id="mdl">
 	<div class="header">
-		<strong>Production analysis</strong>
+		<strong align=center>Production Summary.</strong>
 		<hr class="inverted">
 	</div>
 	<div class="content">

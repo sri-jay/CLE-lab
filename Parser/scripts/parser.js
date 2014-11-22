@@ -75,8 +75,54 @@ function Grammar() {
 			this.productions[prod.lhs].push(prod.rhs.join(''));		
 	};
 
-	this.removeLeftRecursion = function () {
+	this.analyzeGrammar = function(){
+		var data = [];
 
+		var
+			isLr = false,
+			isLf = false;
+
+		console.log("Analysing for left recursion and left factoring : "+this.productions);
+
+		for(var m in this.productions){
+			isLr = false;
+			isLf = false;
+
+			for(var i=0;i<this.productions[m].length;i++) {
+				if(m == this.productions[m][i][0]) {
+					//data.lr[m] = this.productions[m];
+					isLr = true;
+					break;
+				}
+			}
+
+			for(var i = 0;i<this.productions[m].length;i++){
+				var lfTer = this.productions[m][i];
+				lfTer = lfTer[0];
+				if(this.terminals.indexOf(lfTer) >= 0){
+					for(var j=0;j<this.productions[m].length;j++){
+						var prdRhs = this.productions[m][j];
+						prdRhs = prdRhs[0];
+						if(i != j){
+							if(lfTer == prdRhs){
+								isLf = true;
+								break;
+							}
+						}
+					}
+				}
+				if(isLf == true)
+					break;
+			}
+			data.push([m,this.productions[m],isLr,isLf]);
+		}
+
+		console.log(data);
+		return data;
+	};
+
+	this.removeLeftRecursion = function () {
+		var newNter = [];
 		for(var nt in this.productions) {
 
 			var lrProduction = (function (nt, prd) {
@@ -168,69 +214,75 @@ function Grammar() {
 		REFACTOR THIS SHIT.
 	 */
 	this.removeLeftFactoring = function () {
-		for(var m in this.productions) {
+		var pause = true;
+		while(pause){
+			pause = false;
+			for(var m in this.productions) {
 
-			console.log("Production in analysis : "+m+" -> "+this.productions[m]);
-			var data = {};
-			var refact = false;
+				console.log("Production in analysis : "+m+" -> "+this.productions[m]);
+				var data = {};
+				var refact = false;
 
-			/*
-				Holds a map of terminals -> productions starting with said terminal,
-				but in the context of the current production.
-			 */
-			for(var i=0;i<this.terminals.length;i++)
-				data[this.terminals[i]] = [];
+				/*
+				 Holds a map of terminals -> productions starting with said terminal,
+				 but in the context of the current production.
+				 */
+				for(var i=0;i<this.terminals.length;i++)
+					data[this.terminals[i]] = [];
 
-			for(var i=0;i<this.productions[m].length;i++) {
-				var str = this.productions[m][i];
-				var startToken = str[0];
+				for(var i=0;i<this.productions[m].length;i++) {
+					var str = this.productions[m][i];
+					var startToken = str[0];
 
-				if(this.terminals.indexOf(startToken) >= 0) {
-					refact = true;
-					data[startToken].push(str);
-				}
-			}
-			console.log(data);
-			if(refact){
-				console.log("%c- Analysing for Refactoring:",'color: orange');
-				for(var v in data) {
-					if(data[v].length < 2) {
-						console.log("%c-- Number of productions < 2, skipping.",'color: green');
-						continue;
+					if(this.terminals.indexOf(startToken) >= 0) {
+						refact = true;
+						data[startToken].push(str);
 					}
-					else {
-						console.log("%c-- Refactoring needed",'color: red');
-						console.log("%c-- Adding a new Terminal:",'color: maroon');
-						var newNonTer = v.toUpperCase() + ".";
-						console.log("%c--- "+newNonTer,'color: blue');
-						this.nonTerminals.push(newNonTer);
+				}
+				console.log(data);
+				if(refact){
+					console.log("%c- Analysing for Refactoring:",'color: orange');
+					for(var v in data) {
+						if(data[v].length < 2) {
+							console.log("%c-- Number of productions < 2, skipping.",'color: green');
+							continue;
+						}
+						else {
+							pause = true;
+							console.log("%c-- Refactoring needed",'color: red');
+							console.log("%c-- Adding a new Terminal:",'color: maroon');
+							var newNonTer = v.toUpperCase() + ".";
+							console.log("%c--- "+newNonTer,'color: blue');
+							this.nonTerminals.push(newNonTer);
 
-						var rhs = []
-						for(var j=0;j<data[v].length;j++) {
-							var str = data[v][j].slice(1);
-							if(str.length == 0)
-								rhs.push("<lambda>");
-							else
-								rhs.push(str);
-						}
-						for(var j=0;j<this.productions[m].length;j++) {
-							var str = this.productions[m][j];
-							console.log(str);
-							if(str[0] == v) {
-								this.productions[m].splice(j,1);
-								j--;
+							var rhs = []
+							for(var j=0;j<data[v].length;j++) {
+								var str = data[v][j].slice(1);
+								if(str.length == 0)
+									rhs.push("<lambda>");
+								else
+									rhs.push(str);
 							}
-						}
-						this.productions[m].push(v+newNonTer);
-						for(var j=0;j<rhs.length;j++) {
-							console.log(rhs[j].split(''));
-							var newProd = new Production(newNonTer, rhs[j].split(''));
-							this.addProduction(newProd);
+							for(var j=0;j<this.productions[m].length;j++) {
+								var str = this.productions[m][j];
+								console.log(str);
+								if(str[0] == v) {
+									this.productions[m].splice(j,1);
+									j--;
+								}
+							}
+							this.productions[m].push(v+newNonTer);
+							for(var j=0;j<rhs.length;j++) {
+								console.log(rhs[j].split(''));
+								var newProd = new Production(newNonTer, rhs[j].split(''));
+								this.addProduction(newProd);
+							}
 						}
 					}
 				}
 			}
 		}
+
 	};
 
 	this.buildFirstAndFollow = function () {
@@ -297,7 +349,7 @@ function Grammar() {
 function driver() {
 	var G = new Grammar();
 
-	G.specifyNTerminals(['A', 'S', 'X']);
+	G.specifyNTerminals(['A', 'S', 'X', 'Y', 'Z']);
 	G.specifyTerminals(['c', 'b', 'd', 'a']);
 
 	G.addProduction(new Production("S",['A','a']));
@@ -310,8 +362,13 @@ function driver() {
 	G.addProduction(new Production("X", ['a', 'd']));
 	G.addProduction(new Production("X", ['a']));
 	G.addProduction(new Production("X",['c','b']));
+	G.addProduction(new Production("Y",['b']));
+	G.addProduction(new Production("Y",['b','c']));
+	G.addProduction(new Production("Z",['Z','d']))
 
 	G.printAllProductions();
+	G.analyzeGrammar();
+
 	G.removeLeftRecursion();
 	G.removeLeftFactoring();
 	G.printAllProductions();

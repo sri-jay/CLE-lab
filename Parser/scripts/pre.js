@@ -187,7 +187,7 @@ $(document).ready(function(){
                     lhsError = true;
 
                 for(var v in rhs){
-                    if(symbols.ter.indexOf(rhs[v]) < 0){
+                    if( (symbols.ter.indexOf(rhs[v]) < 0) && (symbols.nter.indexOf(rhs[v]) < 0)) {
                         rhsError = true;
                         break;
                     }
@@ -311,7 +311,6 @@ $(document).ready(function(){
         $("#prod-message").html("");
     });
 
-
     $("#prod-verified").click(function(){
         grammar.clearAllProductions();
         $("#p-input-area").children().each(function(){
@@ -334,6 +333,18 @@ $(document).ready(function(){
         setTimeout(function(){
             $("#mdl").modal('hide');
             console.log("%c- User notified on grammar.","color:red");
+            createProductionSummary(grammar.analyzeGrammar());
+            goto("production-summary");
         },1200);
+    });
+
+    $("#handle-errors").click(function (){
+        console.log("Removing Left factoring");
+        grammar.removeLeftRecursion();
+        console.log("Removing left recursion");
+        grammar.removeLeftFactoring();
+
+        updateGrammarSummary(grammar.productions);
+        goto("first-follow");
     });
 });
