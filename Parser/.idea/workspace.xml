@@ -28,7 +28,7 @@
         <entry file="file://$PROJECT_DIR$/scripts/parser.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.6892086" vertical-offset="1105" max-vertical-offset="2808">
-              <caret line="480" column="44" selection-start-line="480" selection-start-column="44" selection-end-line="480" selection-end-column="44" />
+              <caret line="480" column="44" selection-start-line="0" selection-start-column="0" selection-end-line="542" selection-end-column="0" />
               <folding>
                 <element signature="n#!!block;n#Production#0" expanded="false" />
                 <element signature="e#481#509#0" expanded="false" />
@@ -937,7 +937,7 @@
     <entry file="file://$PROJECT_DIR$/scripts/parser.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.6892086" vertical-offset="1105" max-vertical-offset="2808">
-          <caret line="480" column="44" selection-start-line="480" selection-start-column="44" selection-end-line="480" selection-end-column="44" />
+          <caret line="480" column="44" selection-start-line="0" selection-start-column="0" selection-end-line="542" selection-end-column="0" />
           <folding>
             <element signature="n#!!block;n#Production#0" expanded="false" />
             <element signature="e#481#509#0" expanded="false" />
