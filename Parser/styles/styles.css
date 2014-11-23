@@ -1,7 +1,7 @@
 body
 {
     margin:0;
-    background-color: #5eaade;
+    background-color: #ffffff;
     font-family: "Inconsolata";
 }
 
@@ -90,6 +90,32 @@ body
 {
     bottom:10px;
     width:98%;
-    margin-right:1%;
+    right:1%;
     position:absolute;
+}
+
+#fst-flw-sets
+{
+    background-color: purple;
+}
+
+#sets-summary
+{
+    width:94%;
+    margin-left:3%;
+    height:94vh;
+    top:3vh;
+}
+
+#sets-action
+{
+    bottom:10px;
+    width:98%;
+    right:1%;
+    position:absolute;
+}
+.new-prod-entries
+{
+    -webkit-animation-fill-mode: forwards;
+    -webkit-animation: entry-animate 2s linear;
 }

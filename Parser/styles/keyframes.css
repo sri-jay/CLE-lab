@@ -14,3 +14,12 @@
         background-color: orangered;
     }
 }
+
+@-webkit-keyframes entry-animate {
+    from{
+        background-color: darkgreen;
+    }
+    to{
+        background-color: white;
+    }
+ }

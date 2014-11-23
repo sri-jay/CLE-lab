@@ -140,13 +140,29 @@ function createProductionSummary(results) {
 
 function updateGrammarSummary(uGrammar) {
     $("#analysis-results").html("");
+    $("#handle-errors").removeClass("orange");
+    $("#handle-errors").addClass("green");
+
+    $("#handle-errors").find("#error-a").html("Grammar is Clean.");
+    $("#handle-errors").find("#error-b").html("Proceed?");
+
+    $("#prod-summary-table").removeClass("red");
+    $("#prod-summary-table").addClass("green");
+
+    $("#prod-fields").html("<th>LHS</th><th>RHS</th>");
 
     for(var m in uGrammar){
+        var data = uGrammar[m];
+        for(var i=0;i<data.length;i++){
+            if(data[i] == "λ"){
+                data[i] = "&lambda;";
+            }
+        }
         if(typeof uGrammar[m] != "undefined"){
-            var str = "<tr>";
+            var str = "<tr class='new-prod-entries'>";
             str += "<td>";
             str += m + "</td><td>";
-            str += uGrammar[m]+"</td></tr>";
+            str += data.join("|")+"</td></tr>";
 
             $("#analysis-results").append(str);
         }
@@ -162,4 +178,49 @@ function updateGrammarSummary(uGrammar) {
 
     $("#prod-fact").html("passed");
     $("#prod-recur").html("passed");
+}
+
+function showFirstAndFollow(symbols,sets){
+
+    console.log(sets);
+    $("#set-data").html("");
+
+    for(var i=0;i<symbols.ter.length;i++){
+        var sym = symbols.ter[i];
+
+        var row = "<tr><td>"+sym+"</td>";
+
+        if(sym in sets.first){
+            row += "<td>"+sets.first[sym]+"</td>";
+        }
+        else
+            row += "<td>-</td>";
+
+        if(sym in sets.follow){
+            row += "<td>"+sets.follow[sym]+"</td>";
+        }
+        else
+            row += "<td>-</td>";
+
+        $("#set-data").append(row);
+    }
+    for(var i=0;i<symbols.nter.length;i++){
+        var sym = symbols.nter[i];
+
+        var row = "<tr><td>"+sym+"</td>";
+
+        if(sym in sets.first){
+            row += "<td>"+sets.first[sym]+"</td>";
+        }
+        else
+            row += "<td>-</td>";
+
+        if(sym in sets.follow){
+            row += "<td>"+sets.follow[sym]+"</td>";
+        }
+        else
+            row += "<td>-</td>";
+
+        $("#set-data").append(row);
+    }
 }

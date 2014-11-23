@@ -63,7 +63,7 @@
 
 			<div class="item">
 				<b>Productions</b>
-				<div class="menu">
+					<div class="menu">
 					<div class="item">
 						Count
 						<div class="ui teal label" id="prod-cnt">1</div>
@@ -72,6 +72,8 @@
 						Status
 						<div class="ui grey label" id="prod-stat">None</div>
 					</div>
+					<br>
+
 					<div class="item">
 						Left Recursion
 						<div class="ui grey label" id="prod-recur">None</div>
@@ -86,6 +88,8 @@
 		<!--Sidebar menu ends here-->
 		<div class="container">
 			<!--Actual code begins-->
+
+			<!--Area to enter symbol inputs-->
 			<div class="blck" id="symbol-input">
 				<div class="ui form segment" id="s-input">
 					<p align="center"><strong>Terminals & Non Terminals</strong></p>
@@ -125,6 +129,8 @@
 					</button>
 				</div>
 			</div>
+
+			<!--Production input area-->
 			<div class="blck" id="production-input">
 				<div class="ui loading form segment" id="p-input">
 					<div class="ui segment" id="p-input-area">
@@ -161,11 +167,12 @@
 				</div>
 			</div>
 
+			<!--Display production summary and errors-->
 			<div class="blck" id="production-summary">
 				<div class="ui segment" id="production-analysis">
-					<table class="ui red table segment">
+					<table class="ui red table segment" id="prod-summary-table">
 						<thead>
-							<tr>
+							<tr id="prod-fields">
 								<th>Production</th>
 								<th>Left Recursion</th>
 								<th>Left Factoring</th>
@@ -179,6 +186,29 @@
 							<div class="hidden content" id="error-b">Remove Errors</div>
 						</button>
 					</div>
+				</div>
+			</div>
+
+			<div class="blck" id="fst-flw-sets">
+				<div class="ui segment" id="sets-summary">
+					<table class="ui table segment" id="sets-table">
+						<thead>
+						<tr>
+							<th>Symbol</th>
+							<th>First</th>
+							<th>Follow</th>
+						</tr>
+						</thead>
+						<tbody id="set-data"></tbody>
+					</table>
+					<button class="mini fluid ui animated fade button" id="sets-action">
+						<div class="visible content">
+							Done?
+						</div>
+						<div class="hidden content">
+							Proceed!
+						</div>
+					</button>
 				</div>
 			</div>
 		<!--Container End-->

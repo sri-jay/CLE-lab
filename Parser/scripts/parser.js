@@ -17,6 +17,7 @@ function Production(lhs,rhs) {
 
 function Grammar() {
 
+	this.startSymbol = null;
 	this.terminals = [];
 	this.nonTerminals = [];
 
@@ -24,12 +25,21 @@ function Grammar() {
 	this.first = {};
 	this.follow = {}	;
 
+	this.parseTable = {};
+
 	this.specifyTerminals = function (ter) {
 		this.terminals = ter;
 	};
 
 	this.specifyNTerminals = function (nter) {
 		this.nonTerminals = nter
+	};
+
+	this.specifyStartSymbol = function(sym){
+		if(this.nonTerminals.indexOf(sym) >= 0)
+			this.startSymbol = sym;
+		else
+			throw new Error();
 	};
 
 	this.isTerminal = function (ter) {
@@ -64,15 +74,24 @@ function Grammar() {
 			}
 	};
 
+	this.getFirstFollow = function () {
+		var sets = new  Object();
+
+		sets.first = this.first;
+		sets.follow = this.follow;
+
+		return sets;
+	};
+
 	this.addProduction = function (prod) {
 		if(typeof this.productions[prod.lhs] == 'undefined') 
 		{
 			this.productions[prod.lhs] = [];
-			this.productions[prod.lhs].push(prod.rhs.join(''));
+			this.productions[prod.lhs].push(prod.rhs);
 		}
 
 		else
-			this.productions[prod.lhs].push(prod.rhs.join(''));		
+			this.productions[prod.lhs].push(prod.rhs);
 	};
 
 	this.analyzeGrammar = function(){
@@ -122,7 +141,7 @@ function Grammar() {
 	};
 
 	this.removeLeftRecursion = function () {
-		var newNter = [];
+		console.log("%cRemoving Left Recursion","background-color:blue;color:green");
 		for(var nt in this.productions) {
 
 			var lrProduction = (function (nt, prd) {
@@ -163,6 +182,7 @@ function Grammar() {
 
 			delete this.productions[lrProduction.recSym];
 
+
 			var nrProduction = (function (lrPd,nonTerminals) {
 
 				var 
@@ -175,10 +195,14 @@ function Grammar() {
 
 				for (var i =0;i<lrPd.recProd.length;i++) {
 					var pd = lrPd.recProd[i];
-					replaceRhs.push(pd.substr(1)+nNt);
+					replaceRhs.push((function(){
+						pd.shift();
+						pd.push(nNt);
+						return pd;
+					})());
 				}
 
-				replaceRhs.push("<lambda>");
+				replaceRhs.push("λ");
 
 				if(lrPd.nonRecProd.length == 0)
 					newProdRhs.push(nNt);
@@ -186,14 +210,13 @@ function Grammar() {
 				else {
 					for (var i=0;i<lrPd.nonRecProd.length;i++)
 					{
-						if(lrPd.nonRecProd[i] == "<lambda>") {
+						if(lrPd.nonRecProd[i] == "λ") {
 							newProdRhs.push(nNt);
 							continue;
 						}
-						newProdRhs.push(lrPd.nonRecProd[i]+nNt);
+						newProdRhs.push([lrPd.nonRecProd[i],nNt]);
 					}
 				}
-
 
 				clrPrdSet.replace = new Production(nNt,replaceRhs);
 				clrPrdSet.newProd = new Production(lrPd.recSym,newProdRhs);
@@ -206,14 +229,12 @@ function Grammar() {
 			this.productions[nrProduction.newProd.lhs] = nrProduction.newProd.rhs;
 		}
 
-		console.log("Finished removing left recursion");
 		console.log(this.productions,this.nonTerminals);
+		console.log("%cRemoved Left Recursion","background-color:blue;color:red");
 	};
 
-	/*
-		REFACTOR THIS SHIT.
-	 */
 	this.removeLeftFactoring = function () {
+		console.log("%cRemoving Left Factoring","background-color:green;color:yellow");
 		var pause = true;
 		while(pause){
 			pause = false;
@@ -259,7 +280,7 @@ function Grammar() {
 							for(var j=0;j<data[v].length;j++) {
 								var str = data[v][j].slice(1);
 								if(str.length == 0)
-									rhs.push("<lambda>");
+									rhs.push("λ");
 								else
 									rhs.push(str);
 							}
@@ -271,10 +292,10 @@ function Grammar() {
 									j--;
 								}
 							}
-							this.productions[m].push(v+newNonTer);
+							this.productions[m].push([v,newNonTer]);
 							for(var j=0;j<rhs.length;j++) {
-								console.log(rhs[j].split(''));
-								var newProd = new Production(newNonTer, rhs[j].split(''));
+								console.log(rhs[j]);
+								var newProd = new Production(newNonTer, rhs[j]);
 								this.addProduction(newProd);
 							}
 						}
@@ -282,94 +303,164 @@ function Grammar() {
 				}
 			}
 		}
-
+		console.log("%cRemoved Left Factoring","background-color:green;color:yellow");
 	};
 
 	this.buildFirstAndFollow = function () {
+		console.log("%cCalculating FIRST and FOLLOW sets.","background-color:orange");
+
 		 this.nullables = (function (productions) {
+		 	console.log("%c- Calculating NULLABLES","color:maroon");
 		 	var nullables = [];
 			for(var m in productions) {
-				if(productions[m].indexOf("<lambda>") >= 0)
+				if(productions[m].indexOf("λ") >= 0)
 					nullables.push(m);
 			}
-			console.log("Nullables : "+nullables);
+		 	console.log("%c- Calculated NULLABLES","color:maroon");
 		})(this.productions);
 
 		/*
-			First of language
+			Calculating FIRST set of language.
 		 */
 		this.first = (function (prod,ter,nter){
-			console.clear();
+			console.log("%cCalculating FIRST set of Grammar.","background-color:green;color:white");
+			var first = {};
 
-			console.log("Building FIRST set.");
-			console.log("Productions : "+prod);
-			console.log("Terminals : "+ter);
-			console.log("Non Terminals : "+nter);
+			for(var i=0;i<ter.length;i++)
+				first[ter[i]] = ter[i];
 
-			console.log("Initializing FIRST set.")
-			var first = (function (prd) {
-				var fst = {};
-				for(var m in prd)
-					fst[m] = [];
-				return fst;
-			})(prod);
-
-			for(var m in prod) {
-				for(var i=0;i<prod[m].length;i++) {
-					var pd = prod[m][i];
-					if(ter.indexOf(pd[0]) >= 0)
-						first[m].push(pd[0]);
+			for(var m in prod){
+				for(var i=0;i<prod[m].length;i++){
+					if(!(m in first))
+						first[m] = [];
+					first[m].push(prod[m][i][0]);
 				}
 			}
-			for(var m in first) {
-				console.log("First of "+m+" -> ");
-				console.log(first[m]);
+
+			while(true){
+				var isChanged = false;
+				for(var m in first){
+					for(var i=0;i<first[m].length;i++){
+						if(nter.indexOf(first[m][i]) >= 0){
+							isChanged = true;
+
+							var nt = first[m][i];
+							first[m].splice(i,1);
+
+							for(var j=0;j<first[nt].length;j++){
+								first[m].push(first[nt][j]);
+							}
+						}
+					}
+				}
+
+				if(!isChanged)
+					break;
 			}
+
+			console.log("%cCalculated FIRST set.","color:limegreen;background-color:black");
+			return first;
 		})(this.productions,this.terminals,this.nonTerminals);
 
-		var follow = (function (prod,ter,nter) {
-			console.clear();
+		/*
+		Calculating follow of language.
+		 */
+		this.follow = (function (prod,ter,nter,first){
+			var follow = {};
+			for(var m in prod)
+				follow[m] = [];
 
-			console.log("Building FOLLOW set.");
-			console.log("Productions : "+prod);
-			console.log("Terminals : "+ter);
-			console.log("Non Terminals : "+nter);
+			for(var m in prod){
+				for(var n in prod){
+					for(var i=0;i<prod[n].length;i++){
+						for(var j=0;j<prod[n][i].length-1;j++){
+							var
+								cSym = prod[n][i][j],
+								nSym = prod[n][i][j+1];
 
-			console.log("Initializing FOLLOW set.")
-			var follow = (function () {
-				var flw = {};
-				for(var m in prod)
-					flw[m] = [];
-				return flw;
-			})(prod);
-		})(this.productions,this.terminals,this.nonTerminals);
+							if(cSym == m) {
+								if (ter.indexOf(nSym) >= 0) {
+									follow[m].push(nSym);
+								}
+								else {
+									for(var k=0;k<first[nSym].length;k++)
+										follow[m].push(first[nSym][k]);
+								}
+							}
+						}
+					}
+				}
+			}
+			return follow;
+		})(this.productions, this.terminals, this.nonTerminals, this.first);
+	};
+
+	this.buildParseTable = function () {
+		var
+			tMap = {},
+			ntMap = {};
+
+		for(var i=0;i<this.terminals.length;i++)
+			tMap[this.terminals[i]] = i;
+
+		for(var i=0;i<this.nonTerminals.length;i++)
+			ntMap[this.nonTerminals[i]] = i;
+
+		for(var i=0;i<this.nonTerminals.length;i++){
+			this.parseTable[i] = [];
+			for(var j=0;j<this.terminals.length;j++){
+				this.parseTable[i].push("");
+			}
+		}
+
+		for(var m in this.productions){
+			for(var i=0;i<this.productions[m].length;i++){
+				var comp = this.productions[m][i][0];
+				var prd = m+" -> "+this.productions[m][i];
+
+				for(var j=0; j<this.first[comp].length;j++){
+					this.parseTable[ntMap[m]][tMap[this.first[comp][j]]] = prd;
+				}
+			}
+		}
+
+		console.log(this.parseTable);
 	};
 }
 
 function driver() {
-	var G = new Grammar();
+	G = new Grammar();
 
-	G.specifyNTerminals(['A', 'S', 'X', 'Y', 'Z']);
-	G.specifyTerminals(['c', 'b', 'd', 'a']);
+	G.specifyNTerminals(['S','F']);
+	G.specifyTerminals(['(',')','a','+']);
 
-	G.addProduction(new Production("S",['A','a']));
-	G.addProduction(new Production("S",['b']));
-	G.addProduction(new Production("A",['A','c']));
-	G.addProduction(new Production("A",['<lambda>']));
-	G.addProduction(new Production("A",['b','d']));
-	G.addProduction(new Production("A",['A','a','d']));
-	G.addProduction(new Production("X", ['a', 'b', 'c']));
-	G.addProduction(new Production("X", ['a', 'd']));
-	G.addProduction(new Production("X", ['a']));
-	G.addProduction(new Production("X",['c','b']));
-	G.addProduction(new Production("Y",['b']));
-	G.addProduction(new Production("Y",['b','c']));
-	G.addProduction(new Production("Z",['Z','d']))
+	//G.addProduction(new Production("S",['A','a']));
+	//G.addProduction(new Production("S",['b']));
+	//G.addProduction(new Production("A",['A','c']));
+	//G.addProduction(new Production("A",['λ']));
+	//G.addProduction(new Production("A",['b','d']));
+	//G.addProduction(new Production("A",['A','a','d']));
+	//G.addProduction(new Production("X", ['a', 'b', 'c']));
+	//G.addProduction(new Production("X", ['a', 'd']));
+	//G.addProduction(new Production("X", ['a']));
+	//G.addProduction(new Production("X",['c','b']));
+	//G.addProduction(new Production("Y",['b']));
+	//G.addProduction(new Production("Y",['b','c']));
+	//G.addProduction(new Production("Z",['Z','d']))
 
-	G.printAllProductions();
-	G.analyzeGrammar();
+	//G.addProduction(new Production("A",['a','b']));
+	//G.addProduction(new Production("A",['b','c']));
+	//G.addProduction(new Production("A",['B','b']));
+	//G.addProduction(new Production("B",['C','c']));
+	//G.addProduction(new Production("B",['x','c']));
+	//G.addProduction(new Production("C",['c']));
+	//G.addProduction(new Production("C",['d']));
+
+	G.addProduction(new Production("S",['F']));
+	G.addProduction(new Production("S",['(','S','+','F',')']));
+	G.addProduction(new Production("F",['a']));
 
 	G.removeLeftRecursion();
 	G.removeLeftFactoring();
-	G.printAllProductions();
+	G.buildFirstAndFollow();
 }

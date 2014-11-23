@@ -343,8 +343,25 @@ $(document).ready(function(){
         grammar.removeLeftRecursion();
         console.log("Removing left recursion");
         grammar.removeLeftFactoring();
+        console.clear();
 
-        updateGrammarSummary(grammar.productions);
-        goto("first-follow");
+        setTimeout(updateGrammarSummary(grammar.productions),500);
+        swal(
+            {
+                type : "success",
+                title : "Removed production inperfections.",
+                text  : "Looks good to go!",
+                showCancelButton : true,
+                confirmButtonText : "Click to Proceed",
+                closeOnConfirm : true
+            },
+            function(isConfirm){
+                if(isConfirm){
+                    grammar.buildFirstAndFollow();
+                    showFirstAndFollow(grammar.getAllSymbols(),grammar.getFirstFollow());
+                    goto("fst-flw-sets");
+                }
+            }
+        );
     });
 });
