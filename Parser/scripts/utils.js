@@ -181,10 +181,7 @@ function updateGrammarSummary(uGrammar) {
 }
 
 function showFirstAndFollow(symbols,sets){
-
-    console.log(sets);
     $("#set-data").html("");
-
     for(var i=0;i<symbols.ter.length;i++){
         var sym = symbols.ter[i];
 
@@ -223,4 +220,19 @@ function showFirstAndFollow(symbols,sets){
 
         $("#set-data").append(row);
     }
+}
+
+function getStartSymbol(nters) {
+    $("#start-symbol-choice").html("");
+    var content ="";
+
+    for(var i=0;i<nters.length;i++){
+        content += '<div class="field">';
+        content += '<input name="start-symbol" class ="ui radio checkbox" type="radio" value="'+nters[i]+'">';
+        content += "<label>"+nters[i]+"</label>";
+        content += "</div>";
+    }
+
+    $("#start-symbol-choice").append(content);
+    $("#start-symbol-modal").modal('toggle');
 }

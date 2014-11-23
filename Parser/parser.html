@@ -102,7 +102,7 @@
 					<div class="field">
 						<label><strong>Terminal Symbols</strong></label>
 						<div class="ui massive labeled input">
-							<input type="text" placeholder="Enter terminals here."  id="ter-input" required value="a,b,c">
+							<input type="text" placeholder="Enter terminals here."  id="ter-input" required value="(,),a,+">
 							<div class="ui corner label">
 								<i class="icon red asterisk"></i>
 							</div>
@@ -113,7 +113,7 @@
 							<strong>Non Terminals</strong>
 						</label>
 						<div class="ui massive labeled input">
-							<input type="text" placeholder="Enter non Terminals here" value="A,B,C" required="Enter non terminals here" id="nter-input">
+							<input type="text" placeholder="Enter non Terminals here" value="S,F" required="Enter non terminals here" id="nter-input">
 							<div class="ui corner label">
 								<i class="icon red asterisk"></i>
 							</div>
@@ -170,6 +170,8 @@
 			<!--Display production summary and errors-->
 			<div class="blck" id="production-summary">
 				<div class="ui segment" id="production-analysis">
+					<p align="center"><strong>Production Summary</strong></p>
+					<hr/>
 					<table class="ui red table segment" id="prod-summary-table">
 						<thead>
 							<tr id="prod-fields">
@@ -189,8 +191,11 @@
 				</div>
 			</div>
 
+			<!--Display and review first and follow sets-->
 			<div class="blck" id="fst-flw-sets">
 				<div class="ui segment" id="sets-summary">
+					<p align="center"><strong>FIRST and FOLLOW Sets</strong></p>
+					<hr/>
 					<table class="ui table segment" id="sets-table">
 						<thead>
 						<tr>
@@ -209,6 +214,28 @@
 							Proceed!
 						</div>
 					</button>
+				</div>
+			</div>
+
+			<!--Take input for parsing-->
+			<div class="blck" class="parsing" id="str-parsing">
+				<div class="ui segment" id="string-parsing-main">
+					<p align="center"><strong>Parsing Area</strong></p>
+					<hr>
+					<div class="ui loading form segment" id="string-parsing">
+						<div class="field">
+							<label>Enter Text to be parsed</label>
+							<textarea id="input-strings"></textarea>
+						</div>
+						<button class="mini fluid ui animated fade button" id="parse">
+							<div class="visible content">
+								Done?
+							</div>
+							<div class="hidden content">
+								Parse!
+							</div>
+						</button>
+					</div>
 				</div>
 			</div>
 		<!--Container End-->
@@ -248,4 +275,25 @@
 			</div>
 		</div>
 	<!--</div>-->
+</div>
+
+<!--Get Start symbol summary-->
+<div class="ui basic very large modal" id="start-symbol-modal">
+	<div class="header">
+		<strong align=center>Choose A Start Symbol</strong>
+		<hr class="inverted">
+	</div>
+	<div class="content">
+		<form class="ui inverted form segment" id="start-symbol-ch-form">
+			<div class="ui grouped inline fields" id="start-symbol-choice"></div>
+		</form>
+		<button class="mini fluid ui animated fade button" id="fix-start-symbol">
+			<div class="visible content">
+				Choose Start Symbol
+			</div>
+			<div class="hidden content">
+				Parse!
+			</div>
+		</button>
+	</div>
 </div>

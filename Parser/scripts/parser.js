@@ -396,9 +396,17 @@ function Grammar() {
 	};
 
 	this.buildParseTable = function () {
+
+		this.parseTable = new Object();
+
+		this.parseTable.table = {};
+		this.parseTable.tMap = {};
+		this.parseTable.ntMap = {};
+
 		var
 			tMap = {},
-			ntMap = {};
+			ntMap = {},
+			parseTable = {};
 
 		for(var i=0;i<this.terminals.length;i++)
 			tMap[this.terminals[i]] = i;
@@ -407,24 +415,87 @@ function Grammar() {
 			ntMap[this.nonTerminals[i]] = i;
 
 		for(var i=0;i<this.nonTerminals.length;i++){
-			this.parseTable[i] = [];
+			parseTable[i] = [];
 			for(var j=0;j<this.terminals.length;j++){
-				this.parseTable[i].push("");
+				parseTable[i].push([]);
 			}
 		}
 
 		for(var m in this.productions){
 			for(var i=0;i<this.productions[m].length;i++){
 				var comp = this.productions[m][i][0];
-				var prd = m+" -> "+this.productions[m][i];
-
+				var prd = new Production(m,this.productions[m][i]);
+				console.log(comp);
 				for(var j=0; j<this.first[comp].length;j++){
-					this.parseTable[ntMap[m]][tMap[this.first[comp][j]]] = prd;
+					parseTable[ntMap[m]][tMap[this.first[comp][j]]].push(prd);
 				}
 			}
 		}
 
-		console.log(this.parseTable);
+		this.parseTable.table = parseTable;
+		this.parseTable.tMap = tMap;
+		this.parseTable.ntMap = ntMap;
+
+		console.log("Built Parse table");
+		console.log(parseTable);
+
+	};
+
+	this.parseString = function (input) {
+		console.log("%cBeginning parse action.","background-color:red,color:black;");
+
+		var
+			stack = [],
+			parseActionTable = new Object();
+
+		parseActionTable.status = null;
+		parseActionTable.actions = [];
+
+		var
+			parseTable = this.parseTable.table,
+			tMap = this.parseTable.tMap,
+			ntMap = this.parseTable.ntMap;
+
+		input = input.split("");
+
+		stack.push('$');
+		stack.push(this.startSymbol);
+
+		while(input.length > 0 && stack.length > 0){
+			var inputTop = input[0];
+			var stackTop = stack[stack.length-1];
+
+			if(stackTop == inputTop){
+				input.shift();
+				stack.pop();
+			}
+			else {
+				stack.pop();
+				console.log(stackTop);
+				console.log(inputTop);
+
+				var dataToPush = parseTable[ntMap[stackTop]][tMap[inputTop]];
+
+				if(dataToPush.length > 1){
+					parseActionTable.status = 'error';
+					return parseActionTable;
+				}
+
+				dataToPush = dataToPush[0].getRhs();
+				console.log(dataToPush);
+
+				for(var i =dataToPush.length-1;i>=0;i--)
+					stack.push(dataToPush[i]);
+			}
+
+			console.log("Input : ");
+			console.log(input);
+
+			console.log("Parse Stack : ");
+			console.log(stack);
+		}
+
+		console.log("%cEnd Parse Action.","background-color:red,color:black;");
 	};
 }
 
@@ -463,4 +534,9 @@ function driver() {
 	G.removeLeftRecursion();
 	G.removeLeftFactoring();
 	G.buildFirstAndFollow();
+	G.buildParseTable();
+
+	G.startSymbol = 'S';
+
+	G.parseString("(a+a)");
 }

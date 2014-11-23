@@ -22,17 +22,17 @@ body
 }
 .pass
 {
-    -webkit-animation: toPass 3s linear;
+    -webkit-animation: toPass 2s linear;
     -webkit-animation-fill-mode: forwards;
 }
 .fail
 {
-    -webkit-animation: toFail 3s linear;
+    -webkit-animation: toFail 2s linear;
     -webkit-animation-fill-mode: forwards;
 }
 .reset
 {
-    -webkit-animation: toReset 3s linear;
+    -webkit-animation: toReset 2s linear;
     -webkit-animation-fill-mode: forwards;
 }
 #s-input
@@ -96,7 +96,7 @@ body
 
 #fst-flw-sets
 {
-    background-color: purple;
+    background-color:darkorange;
 }
 
 #sets-summary
@@ -107,6 +107,18 @@ body
     top:3vh;
 }
 
+#string-parsing-main
+{
+    width:94%;
+    height:90vh;
+    margin-left:3%;
+    margin-right:3%;
+    top:5vh;
+}
+
+.parsing{
+    -webkit-animation: parsing-animation 1s linear alternate infinite;
+}
 #sets-action
 {
     bottom:10px;

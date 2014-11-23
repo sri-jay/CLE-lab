@@ -10,7 +10,7 @@ $(document).ready(function(){
      */
     var prodDebug = true;
 
-    $("#check-symbols").click(function(){
+    $("#check-symbols").click(function (){
         /*
          Phase 1 Symbol check error flags.
          */
@@ -147,7 +147,7 @@ $(document).ready(function(){
         }
     });
 
-    $("#check-productions").click(function(){
+    $("#check-productions").click(function (){
 
         var
             globalError = false,
@@ -289,7 +289,7 @@ $(document).ready(function(){
         globalError = false;
     });
 
-    $("#reset-productions").click(function() {
+    $("#reset-productions").click(function () {
         reset(grammar.nonTerminals);
         var back = document.getElementById("production-input");
 
@@ -306,12 +306,12 @@ $(document).ready(function(){
         stat.innerHTML = "Reset";
     });
 
-    $("#prod-rejected").click(function(){
+    $("#prod-rejected").click(function (){
         grammar.clearAllProductions();
         $("#prod-message").html("");
     });
 
-    $("#prod-verified").click(function(){
+    $("#prod-verified").click(function (){
         grammar.clearAllProductions();
         $("#p-input-area").children().each(function(){
             var
@@ -338,7 +338,7 @@ $(document).ready(function(){
         },1200);
     });
 
-    $("#handle-errors").click(function (){
+    $("#handle-errors").click(function () {
         console.log("Removing Left factoring");
         grammar.removeLeftRecursion();
         console.log("Removing left recursion");
@@ -363,5 +363,36 @@ $(document).ready(function(){
                 }
             }
         );
+    });
+
+    $("#sets-action").click(function (){
+        $("#string-parsing").removeClass("loading");
+        goto("string-parsing");
+        grammar.buildParseTable();
+    })
+
+    $("#parse").click(function (){
+        if(grammar.startSymbol == null){
+            getStartSymbol(grammar.getAllSymbols().nter);
+            $(this).addClass("red");
+            $("#str-parsing").removeClass("fail");
+            $("#str-parsing").addClass("fail");
+        }
+        else{
+            grammar.parseString($("#input-strings").val());
+        }
+    });
+
+    $("#fix-start-symbol").click(function (){
+        var startSymbol = $("#start-symbol-ch-form input[type='radio']:checked").val();
+        grammar.startSymbol = startSymbol;
+
+        $("#parse").removeClass("red");
+        $("#str-parsing").removeClass("fail");
+
+        $("#parse").addClass("green");
+        $("#str-parsing").addClass("pass");
+
+        $("#start-symbol-modal").modal('toggle');
     });
 });
