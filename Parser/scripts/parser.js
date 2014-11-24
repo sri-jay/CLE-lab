@@ -44,7 +44,6 @@ function Grammar() {
 			throw new Error();
 	};
 
-	// Utility f()
 	this.isTerminal = function (ter) {
 		if(this.terminals.indexOf(ter) >= 0)
 			return true;
@@ -52,7 +51,6 @@ function Grammar() {
 			return false;
 	};
 
-	// Utility f()
 	this.isNonTerminal = function (nTer) {
 		if(this.nonTerminals.indexOf(nTer) >= 0)
 			return true;
@@ -60,7 +58,6 @@ function Grammar() {
 			return false;
 	};
 
-	// Utility f()
 	this.getAllSymbols = function () {
 		var symbols = new Object();
 		symbols.ter = this.terminals;
@@ -68,7 +65,6 @@ function Grammar() {
 		return symbols;
 	};
 
-	// Utility f()
 	this.getFirstFollow = function () {
 		var sets = new  Object();
 
@@ -78,17 +74,14 @@ function Grammar() {
 		return sets;
 	};
 
-	// Utility f()
 	this.getParseTable = function () {
 		return this.parseTable;
 	};
 
-	// Utility f()
 	this.clearAllProductions = function(){
 		this.productions = {};
 	};
 
-	// Utility f()
 	this.printAllProductions = function () {
 			for(var m in this.productions)
 			{
@@ -96,7 +89,6 @@ function Grammar() {
 			}
 	};
 
-	// Utility f()
 	this.addProduction = function (prod) {
 		if(typeof this.productions[prod.lhs] == 'undefined') 
 		{

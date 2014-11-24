@@ -25,7 +25,7 @@ function reset(nte){
     nter = nte;
     var ipArea = document.getElementById("p-input-area");
     ipArea.innerHTML = '<p align="center"><strong>Productions</strong></p><div class="ui message"><p>Enter productions here</p><ul><li>Do not use comma, asterisk, apostrophe, period or double quotes in your terminals/non terminals please</li></ul></div>';
-    for(var i=0;i<3;i++)
+    for(var i=0;i<1;i++)
         writeOneElement();
 }
 
