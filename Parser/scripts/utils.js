@@ -236,3 +236,35 @@ function getStartSymbol(nters) {
     $("#start-symbol-choice").append(content);
     $("#start-symbol-modal").modal('toggle');
 }
+
+function showParseResults(results) {
+    $("#parse-results-main").html("");
+
+    for(var i=0;i<results.length;i++){
+
+        var
+            stat = results[i].status,
+            actions = results[i].actions;
+
+        var str = "";
+
+        if(stat != true){
+            str += '<table class="ui red inverted table segment">';
+        }
+        else
+            str += '<table class="ui green inverted table segment">';
+
+        str += '<thead><tr><th>#</th><th>Input Stack</th><th>Parse Stack</th></tr></thead><tbody>';
+
+        for(var j=0;j<actions.length;j++){
+            var
+                inputStack = actions[j].string,
+                parseStack = actions[j].stack;
+
+            str += "<tr><td>"+j+"</td>"+"<td>"+inputStack+"</td><td>"+parseStack+"</td></tr>";
+        }
+        str += "</tbody></table>";
+
+        $("#parse-results-main").append(str);
+    }
+}

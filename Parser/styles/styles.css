@@ -126,6 +126,14 @@ body
     right:1%;
     position:absolute;
 }
+
+#parse-results-main
+{
+    width:94%;
+    margin-left:3%;
+    margin-right:3%;
+    top:5vh;
+}
 .new-prod-entries
 {
     -webkit-animation-fill-mode: forwards;

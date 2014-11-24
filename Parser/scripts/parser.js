@@ -456,10 +456,13 @@ function Grammar() {
 			tMap = this.parseTable.tMap,
 			ntMap = this.parseTable.ntMap;
 
-		input = input.split("");
+		input = input.split(" ");
+
+		input.push('$');
 
 		stack.push('$');
 		stack.push(this.startSymbol);
+
 
 		while(input.length > 0 && stack.length > 0){
 			var inputTop = input[0];
@@ -471,31 +474,39 @@ function Grammar() {
 			}
 			else {
 				stack.pop();
-				console.log(stackTop);
-				console.log(inputTop);
 
-				var dataToPush = parseTable[ntMap[stackTop]][tMap[inputTop]];
+				try{
+					var dataToPush = parseTable[ntMap[stackTop]][tMap[inputTop]];
 
-				if(dataToPush.length > 1){
+					if(dataToPush.length > 1){
+						parseActionTable.status = 'error';
+						return parseActionTable;
+					}
+
+					dataToPush = dataToPush[0].getRhs();
+					console.log(dataToPush);
+
+					for(var i =dataToPush.length-1;i>=0;i--)
+						stack.push(dataToPush[i]);
+				}
+				catch (err) {
 					parseActionTable.status = 'error';
 					return parseActionTable;
 				}
-
-				dataToPush = dataToPush[0].getRhs();
-				console.log(dataToPush);
-
-				for(var i =dataToPush.length-1;i>=0;i--)
-					stack.push(dataToPush[i]);
 			}
 
-			console.log("Input : ");
-			console.log(input);
-
-			console.log("Parse Stack : ");
-			console.log(stack);
+			parseActionTable.actions.push({"string":input.toString(),"stack":stack.toString()});
 		}
 
+		if(input.length == 0 && stack.length == 0){
+			parseActionTable.status = true;
+		}
+		else
+			parseActionTable.status = false;
+
 		console.log("%cEnd Parse Action.","background-color:red,color:black;");
+
+		return parseActionTable;
 	};
 }
 
@@ -538,5 +549,5 @@ function driver() {
 
 	G.startSymbol = 'S';
 
-	G.parseString("(a+a)");
+	parseResults = G.parseString("( a + a )");
 }
