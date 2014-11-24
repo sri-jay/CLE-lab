@@ -1,6 +1,8 @@
-function Production(lhs,rhs) {
+function Production(lhs,rhs,dat) {
 	this.lhs = lhs;
 	this.rhs = rhs;
+
+	this.dat = dat;
 
 	this.getLhs = function () {
 		return this.lhs;
@@ -35,13 +37,14 @@ function Grammar() {
 		this.nonTerminals = nter
 	};
 
-	this.specifyStartSymbol = function(sym){
+	this.setStartSymbol = function(sym){
 		if(this.nonTerminals.indexOf(sym) >= 0)
 			this.startSymbol = sym;
 		else
 			throw new Error();
 	};
 
+	// Utility f()
 	this.isTerminal = function (ter) {
 		if(this.terminals.indexOf(ter) >= 0)
 			return true;
@@ -49,6 +52,7 @@ function Grammar() {
 			return false;
 	};
 
+	// Utility f()
 	this.isNonTerminal = function (nTer) {
 		if(this.nonTerminals.indexOf(nTer) >= 0)
 			return true;
@@ -56,6 +60,7 @@ function Grammar() {
 			return false;
 	};
 
+	// Utility f()
 	this.getAllSymbols = function () {
 		var symbols = new Object();
 		symbols.ter = this.terminals;
@@ -63,17 +68,7 @@ function Grammar() {
 		return symbols;
 	};
 
-	this.clearAllProductions = function(){
-		this.productions = {};
-	};
-
-	this.printAllProductions = function () {
-			for(var m in this.productions)
-			{
-				console.log(m+" -> "+this.productions[m].join("|"));
-			}
-	};
-
+	// Utility f()
 	this.getFirstFollow = function () {
 		var sets = new  Object();
 
@@ -83,6 +78,25 @@ function Grammar() {
 		return sets;
 	};
 
+	// Utility f()
+	this.getParseTable = function () {
+		return this.parseTable;
+	};
+
+	// Utility f()
+	this.clearAllProductions = function(){
+		this.productions = {};
+	};
+
+	// Utility f()
+	this.printAllProductions = function () {
+			for(var m in this.productions)
+			{
+				console.log(m+" -> "+this.productions[m].join("|"));
+			}
+	};
+
+	// Utility f()
 	this.addProduction = function (prod) {
 		if(typeof this.productions[prod.lhs] == 'undefined') 
 		{
@@ -317,6 +331,7 @@ function Grammar() {
 					nullables.push(m);
 			}
 		 	console.log("%c- Calculated NULLABLES","color:maroon");
+			 return nullables;
 		})(this.productions);
 
 		/*
@@ -424,10 +439,24 @@ function Grammar() {
 		for(var m in this.productions){
 			for(var i=0;i<this.productions[m].length;i++){
 				var comp = this.productions[m][i][0];
-				var prd = new Production(m,this.productions[m][i]);
+				var prd = new Production(m,this.productions[m][i],true);
 				console.log(comp);
 				for(var j=0; j<this.first[comp].length;j++){
 					parseTable[ntMap[m]][tMap[this.first[comp][j]]].push(prd);
+				}
+			}
+		}
+
+		// Marking follow of the grammar
+		for(var m in this.productions){
+			for(var i=0;i<this.productions[m].length;i++){
+				var comp = this.productions[m][i][0];
+				var prd = new Production(m,this.productions[m][i],false);
+
+				if(this.nullables.indexOf(comp) >= 0){
+					for(var j=0; j<this.follow[comp].length;j++){
+						parseTable[ntMap[m]][tMap[this.follow[comp][j]]].push(prd);
+					}
 				}
 			}
 		}
@@ -494,7 +523,6 @@ function Grammar() {
 					return parseActionTable;
 				}
 			}
-
 			parseActionTable.actions.push({"string":input.toString(),"stack":stack.toString()});
 		}
 

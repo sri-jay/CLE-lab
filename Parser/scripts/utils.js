@@ -237,7 +237,46 @@ function getStartSymbol(nters) {
     $("#start-symbol-modal").modal('toggle');
 }
 
-function showParseResults(results) {
+function drawParseTable(parseTable,symbols){
+    $("#parse-table").html("");
+
+    var thead = "<thead><tr><th>*</th>";
+    for(var i=0;i<symbols.ter.length;i++)
+        thead += "<th>"+symbols.ter[i]+"</th>";
+
+    thead+= "</tr></thead>";
+
+    $("#parse-table").append(thead);
+
+    var tbody = "<tbody>";
+
+    var table = parseTable.table;
+    for(var m in table){
+        tbody += "<tr><td>";
+        tbody += symbols.nter[m]+"</td>";
+
+        var entry = table[m];
+        for(var  i=0;i<entry.length;i++){
+            if(entry[i].length > 0 && entry[i][0])
+                tbody += "<td class='"+(function(dat){
+                    if(dat)
+                        return "positive";
+                    else
+                        return "negative";
+                })(entry[i][0].dat)+"'>"+entry[i][0].getLhs()+" -> "+entry[i][0].getRhs()+"</td>";
+            else
+                tbody += "<td>&lambda;</td>";
+        }
+        tbody += "</tr>";
+        console.log(tbody);
+    }
+
+    tbody += "</tbody>";
+
+    $("#parse-table").append(tbody);
+}
+
+function showParseResults(strings,results) {
     $("#parse-results-main").html("");
 
     for(var i=0;i<results.length;i++){
@@ -246,7 +285,14 @@ function showParseResults(results) {
             stat = results[i].status,
             actions = results[i].actions;
 
-        var str = "";
+        var str = "Parse Table for String :"+strings[i]+"&nbsp;&nbsp;Verdict : "+
+            (function(s){
+                if(s == "error")
+                    return "<strong style='color:red'>Error</strong>"
+                else
+                    return "<strong style='color:green'>Parsed</strong>"
+            })(stat)
+        +"<hr/>";
 
         if(stat != true){
             str += '<table class="ui red inverted table segment">';
@@ -256,10 +302,10 @@ function showParseResults(results) {
 
         str += '<thead><tr><th>#</th><th>Input Stack</th><th>Parse Stack</th></tr></thead><tbody>';
 
-        for(var j=0;j<actions.length;j++){
+        for(var j=0;j<actions.length-1;j++){
             var
                 inputStack = actions[j].string,
-                parseStack = actions[j].stack;
+                parseStack = actions[j].stack.split(",").reverse().join(",");
 
             str += "<tr><td>"+j+"</td>"+"<td>"+inputStack+"</td><td>"+parseStack+"</td></tr>";
         }

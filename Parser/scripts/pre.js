@@ -243,6 +243,9 @@ $(document).ready(function(){
             $("#production-input").removeClass("fail");
             $("#production-input").addClass("pass");
 
+            $('#handle-errors').removeClass("orange");
+            $('#handle-errors').addClass("green");
+
             prodStat.classList.remove("grey");
             prodStat.classList.remove("red");
             prodStat.classList.add("green");
@@ -344,12 +347,13 @@ $(document).ready(function(){
         console.log("Removing left recursion");
         grammar.removeLeftFactoring();
         console.clear();
-
+        $(this).removeClass("orange");
+        $(this).addClass("green");
         setTimeout(updateGrammarSummary(grammar.productions),500);
         swal(
             {
                 type : "success",
-                title : "Removed production inperfections.",
+                title : "Removed production im  perfections.",
                 text  : "Looks good to go!",
                 showCancelButton : true,
                 confirmButtonText : "Click to Proceed",
@@ -359,6 +363,8 @@ $(document).ready(function(){
                 if(isConfirm){
                     grammar.buildFirstAndFollow();
                     showFirstAndFollow(grammar.getAllSymbols(),grammar.getFirstFollow());
+                    grammar.buildParseTable();
+                    drawParseTable(grammar.getParseTable(),grammar.getAllSymbols());
                     goto("fst-flw-sets");
                 }
             }
@@ -368,7 +374,6 @@ $(document).ready(function(){
     $("#sets-action").click(function (){
         $("#string-parsing").removeClass("loading");
         goto("str-parsing");
-        grammar.buildParseTable();
     })
 
     $("#parse").click(function (){
@@ -390,13 +395,14 @@ $(document).ready(function(){
 
                 parseResults.push(grammar.parseString(strings[i]));
             }
-            showParseResults(parseResults);
+            showParseResults(strings, parseResults);
             goto("view-parsing-results");
+            grammar.startSymbol = null;
         }
     });
 
     $("#fix-start-symbol").click(function (){
-        grammar.startSymbol = $("#start-symbol-ch-form input[type='radio']:checked").val();
+        grammar.setStartSymbol($("#start-symbol-ch-form input[type='radio']:checked").val());
 
         $("#parse").removeClass("red").addClass("green");
         $("#str-parsing").removeClass("fail").addClass("pass");

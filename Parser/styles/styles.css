@@ -114,6 +114,7 @@ body
     margin-left:3%;
     margin-right:3%;
     top:5vh;
+    overflow-x: scroll;
 }
 
 .parsing{
@@ -132,8 +133,17 @@ body
     width:94%;
     margin-left:3%;
     margin-right:3%;
+    overflow: scroll;
     top:5vh;
+    height:90vh;
+    bottom: 5vh;
 }
+
+#view-parsing-results
+{
+    background-color: white!important;
+}
+
 .new-prod-entries
 {
     -webkit-animation-fill-mode: forwards;
