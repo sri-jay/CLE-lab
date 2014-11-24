@@ -279,11 +279,16 @@ function drawParseTable(parseTable,symbols){
 function showParseResults(strings,results) {
     $("#parse-results-main").html("");
 
+    var parsedCount = 0;
+
     for(var i=0;i<results.length;i++){
 
         var
             stat = results[i].status,
             actions = results[i].actions;
+
+        if(stat == true)
+            parsedCount++;
 
         var str = "Parse Table for String :"+strings[i]+"&nbsp;&nbsp;Verdict : "+
             (function(s){
@@ -312,5 +317,17 @@ function showParseResults(strings,results) {
         str += "</tbody></table>";
 
         $("#parse-results-main").append(str);
+        $("#input-vol").html(strings.length);
+        $("#parsed-vol").html(parsedCount);
+        $("#nonparesd-vol").html(strings.length - parsedCount);
+
+        if(parsedCount == strings.length){
+            $("#nonparesd-vol").addClass("green");
+            $("#nonparesd-vol").removeClass("red");
+        }
+        else {
+            $("#nonparesd-vol").removeClass("green");
+            $("#nonparesd-vol").addClass("red");
+        }
     }
 }

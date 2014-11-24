@@ -265,11 +265,19 @@ function Grammar() {
 				for(var i=0;i<this.terminals.length;i++)
 					data[this.terminals[i]] = [];
 
+				for(var i=0;i<this.nonTerminals.length;i++)
+					data[this.nonTerminals[i]] = [];
+
 				for(var i=0;i<this.productions[m].length;i++) {
 					var str = this.productions[m][i];
 					var startToken = str[0];
 
 					if(this.terminals.indexOf(startToken) >= 0) {
+						refact = true;
+						data[startToken].push(str);
+					}
+
+					if(this.nonTerminals.indexOf(startToken) >= 0) {
 						refact = true;
 						data[startToken].push(str);
 					}
@@ -567,7 +575,7 @@ function driver() {
 	//G.addProduction(new Production("C",['d']));
 
 	G.addProduction(new Production("S",['F']));
-	G.addProduction(new Production("S",['(','S','+','F',')']));
+	G.addProduction(new Production("S",['F','a']));
 	G.addProduction(new Production("F",['a']));
 
 	G.removeLeftRecursion();
