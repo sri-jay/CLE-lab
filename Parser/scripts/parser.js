@@ -31,6 +31,7 @@ function Grammar() {
 
 	this.specifyTerminals = function (ter) {
 		this.terminals = ter;
+		this.terminals.push('$');
 	};
 
 	this.specifyNTerminals = function (nter) {
@@ -497,6 +498,13 @@ function Grammar() {
 			var inputTop = input[0];
 			var stackTop = stack[stack.length-1];
 
+			if( !(this.terminals.indexOf(inputTop) >= 0) ){
+				console.log("Input Top:");
+				console.log(inputTop);
+				parseActionTable.status = "SYMBOL_ERROR";
+				return parseActionTable;
+			}
+
 			if(stackTop == inputTop){
 				input.shift();
 				stack.pop();
@@ -508,7 +516,7 @@ function Grammar() {
 					var dataToPush = parseTable[ntMap[stackTop]][tMap[inputTop]];
 
 					if(dataToPush.length > 1){
-						parseActionTable.status = 'error';
+						parseActionTable.status = 'PARSE_ERROR';
 						return parseActionTable;
 					}
 
@@ -519,7 +527,7 @@ function Grammar() {
 						stack.push(dataToPush[i]);
 				}
 				catch (err) {
-					parseActionTable.status = 'error';
+					parseActionTable.status = 'PARSE_ERROR';
 					return parseActionTable;
 				}
 			}
@@ -527,10 +535,10 @@ function Grammar() {
 		}
 
 		if(input.length == 0 && stack.length == 0){
-			parseActionTable.status = true;
+			parseActionTable.status = 'PARSE_SUCCESSFUL';
 		}
 		else
-			parseActionTable.status = false;
+			parseActionTable.status = 'PARSE_UNSUCCESSFUL';
 
 		console.log("%cEnd Parse Action.","background-color:red,color:black;");
 
@@ -566,16 +574,16 @@ function driver() {
 	//G.addProduction(new Production("C",['c']));
 	//G.addProduction(new Production("C",['d']));
 
+	G.startSymbol = 'S';
+
 	G.addProduction(new Production("S",['F']));
-	G.addProduction(new Production("S",['F','a']));
+	G.addProduction(new Production("S",['(','S','+','F',')']));
 	G.addProduction(new Production("F",['a']));
 
 	G.removeLeftRecursion();
 	G.removeLeftFactoring();
 	G.buildFirstAndFollow();
 	G.buildParseTable();
-
-	G.startSymbol = 'S';
 
 	parseResults = G.parseString("( a + a )");
 }

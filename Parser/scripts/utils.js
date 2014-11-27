@@ -287,23 +287,30 @@ function showParseResults(strings,results) {
             stat = results[i].status,
             actions = results[i].actions;
 
-        if(stat == true)
+        if(stat == "PARSE_SUCCESSFUL")
             parsedCount++;
 
         var str = "Parse Table for String :"+strings[i]+"&nbsp;&nbsp;Verdict : "+
             (function(s){
-                if(s == "error")
-                    return "<strong style='color:red'>Error</strong>"
-                else
-                    return "<strong style='color:green'>Parsed</strong>"
+                if(s == "PARSE_ERROR")
+                    return "<strong style='color:red'>Error</strong>";
+                else if(s == "PARSE_SUCCESSFUL")
+                    return "<strong style='color:green'>Parsed</strong>";
+                else if(s == "PARSE_UNSUCCESSFUL")
+                    return "<strong style='color:red'>Parse Unsuccessful</strong>";
+                else if(s == "SYMBOL_ERROR")
+                    return "<strong style='color:orangered'>Unknown Symbol Encountered.</strong>";
             })(stat)
         +"<hr/>";
 
-        if(stat != true){
-            str += '<table class="ui red inverted table segment">';
-        }
-        else
+        if(stat == 'PARSE_SUCCESSFUL'){
             str += '<table class="ui green inverted table segment">';
+        }
+        else if(stat == 'SYMBOL_ERROR')
+            str += '<table class="ui orange inverted table segment">';
+        else
+            str += '<table class="ui red inverted table segment">';
+
 
         str += '<thead><tr><th>#</th><th>Input Stack</th><th>Parse Stack</th></tr></thead><tbody>';
 
