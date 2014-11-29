@@ -125,7 +125,7 @@ function Grammar() {
 			for(var i = 0;i<this.productions[m].length;i++){
 				var lfTer = this.productions[m][i];
 				lfTer = lfTer[0];
-				if(this.terminals.indexOf(lfTer) >= 0){
+				if(this.terminals.indexOf(lfTer) >= 0 || this.nonTerminals.indexOf(lfTer) >= 0){
 					for(var j=0;j<this.productions[m].length;j++){
 						var prdRhs = this.productions[m][j];
 						prdRhs = prdRhs[0];
@@ -265,15 +265,9 @@ function Grammar() {
 					var str = this.productions[m][i];
 					var startToken = str[0];
 
-					if(this.terminals.indexOf(startToken) >= 0) {
-						refact = true;
-						data[startToken].push(str);
-					}
+					refact = true;
+					data[startToken].push(str);
 
-					if(this.nonTerminals.indexOf(startToken) >= 0) {
-						refact = true;
-						data[startToken].push(str);
-					}
 				}
 				console.log(data);
 				if(refact){
@@ -342,8 +336,10 @@ function Grammar() {
 			console.log("%cCalculating FIRST set of Grammar.","background-color:green;color:white");
 			var first = {};
 
-			for(var i=0;i<ter.length;i++)
-				first[ter[i]] = ter[i];
+			for(var i=0;i<ter.length;i++){
+				first[ter[i]] = [];
+				first[ter[i]].push(ter[i]);
+			}
 
 			for(var m in prod){
 				for(var i=0;i<prod[m].length;i++){
@@ -441,7 +437,6 @@ function Grammar() {
 			for(var i=0;i<this.productions[m].length;i++){
 				var comp = this.productions[m][i][0];
 				var prd = new Production(m,this.productions[m][i],true);
-				console.log(comp);
 				for(var j=0; j<this.first[comp].length;j++){
 					parseTable[ntMap[m]][tMap[this.first[comp][j]]].push(prd);
 				}
@@ -549,8 +544,8 @@ function Grammar() {
 function driver() {
 	G = new Grammar();
 
-	G.specifyNTerminals(['S','F']);
-	G.specifyTerminals(['(',')','a','+']);
+	G.specifyNTerminals(['S','F','L']);
+	G.specifyTerminals(['(',')','a','+', 'lf']);
 
 	//G.addProduction(new Production("S",['A','a']));
 	//G.addProduction(new Production("S",['b']));
@@ -576,9 +571,10 @@ function driver() {
 
 	G.startSymbol = 'S';
 
-	G.addProduction(new Production("S",['F']));
-	G.addProduction(new Production("S",['(','S','+','F',')']));
+	G.addProduction(new Production("S",['L','F']));
+	G.addProduction(new Production("S",['L','(','S','+','F',')']));
 	G.addProduction(new Production("F",['a']));
+	G.addProduction(new Production("L",['lf']));
 
 	G.removeLeftRecursion();
 	G.removeLeftFactoring();

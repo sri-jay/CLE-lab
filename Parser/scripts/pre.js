@@ -127,7 +127,6 @@ $(document).ready(function(){
                                 },
                                 function (isConfirm) {
                                     if(isConfirm){
-                                        var data = grammar.getAllSymbols();
                                         reset(grammar.getAllSymbols().nter);
                                         document.getElementById("p-input").classList.remove("loading");
                                         goto("production-input");
@@ -151,7 +150,6 @@ $(document).ready(function(){
 
         var
             globalError = false,
-            failCount = 0,
             count = 0;
 
         var

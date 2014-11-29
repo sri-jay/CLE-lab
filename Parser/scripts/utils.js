@@ -128,6 +128,8 @@ function createProductionSummary(results) {
     if(isLf || isLr){
         $("#production-summary").removeClass("pass");
         $("#production-summary").addClass("fail");
+        $("#handle-errors").removeClass("green");
+        $("#handle-errors").addClass("red");
     }
     else{
         $("#production-summary").addClass("pass");
@@ -135,6 +137,8 @@ function createProductionSummary(results) {
         $("#analysis-action").addClass("green");
         $("#error-a").html("No Errors");
         $("#error-b").html("Proceed?");
+        $("#handle-errors").removeClass("red");
+        $("#handle-errors").addClass("green");
     }
 }
 
