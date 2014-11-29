@@ -488,7 +488,8 @@ function Grammar() {
 		stack.push('$');
 		stack.push(this.startSymbol);
 
-
+		parseActionTable.actions.push({"string":input.toString(),"stack":stack.toString()});
+		
 		while(input.length > 0 && stack.length > 0){
 			var inputTop = input[0];
 			var stackTop = stack[stack.length-1];

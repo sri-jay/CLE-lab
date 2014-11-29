@@ -105,53 +105,72 @@ function createProductionSummary(results) {
         $("#analysis-results").append(dat);
     }
     if(isLf){
-        $("#prod-fact").removeClass("grey");
-        $("#prod-fact").addClass("red");
-        $("#prod-fact").html("Present")
+        $("#prod-fact")
+            .removeClass("grey")
+            .addClass("red")
+            .html("Present");
     }
     else {
-        $("#prod-fact").removeClass("grey");
-        $("#prod-fact").addClass("green");
-        $("#prod-fact").html("Absent")
+        $("#prod-fact")
+            .removeClass("grey")
+            .addClass("green")
+            .html("Absent");
     }
     if(isLr){
-        $("#prod-recur").removeClass("grey");
-        $("#prod-recur").addClass("red");
-        $("#prod-recur").html("Present")
+        $("#prod-recur").removeClass("grey")
+            .addClass("red")
+            .html("Present");
     }
     else {
-        $("#prod-recur").removeClass("grey");
-        $("#prod-recur").addClass("green");
-        $("#prod-recur").html("Absent")
+        $("#prod-recur")
+            .removeClass("grey")
+            .addClass("green")
+            .html("Absent");
     }
 
     if(isLf || isLr){
-        $("#production-summary").removeClass("pass");
-        $("#production-summary").addClass("fail");
-        $("#handle-errors").removeClass("green");
-        $("#handle-errors").addClass("red");
+        $("#production-summary")
+            .removeClass("pass")
+            .addClass("fail");
+
+        $("#handle-errors")
+            .removeClass("green")
+            .addClass("red");
+
+
+        $("#error-a").html("Errors Present.");
+        $("#error-b").html("Remove Errors?");
     }
     else{
         $("#production-summary").addClass("pass");
-        $("#analysis-action").removeClass("red");
-        $("#analysis-action").addClass("green");
+
+        $("#analysis-action")
+            .removeClass("red")
+            .addClass("green");
+
         $("#error-a").html("No Errors");
         $("#error-b").html("Proceed?");
-        $("#handle-errors").removeClass("red");
-        $("#handle-errors").addClass("green");
+
+        $("#handle-errors")
+            .removeClass("red")
+            .addClass("green");
     }
 }
 
 function updateGrammarSummary(uGrammar) {
     $("#analysis-results").html("");
-    $("#handle-errors").removeClass("orange");
-    $("#handle-errors").addClass("green");
+
+    $("#handle-errors")
+        .removeClass("orange")
+        .removeClass("red")
+        .addClass("green");
 
     $("#handle-errors").find("#error-a").html("Grammar is Clean.");
     $("#handle-errors").find("#error-b").html("Proceed?");
 
-    $("#prod-summary-table").removeClass("red");
-    $("#prod-summary-table").addClass("green");
+    $("#prod-summary-table")
+        .removeClass("red")
+        .addClass("green");
 
     $("#prod-fields").html("<th>LHS</th><th>RHS</th>");
 
